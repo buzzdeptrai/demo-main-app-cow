@@ -5,24 +5,20 @@ namespace App\MiniApps\NnvnApisGo\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class QuizQuestion extends Model
+class BoxConfig extends Model
 {
-    protected $table = 'nnvn_quiz_questions';
+    protected $table = 'nnvn_box_configs';
 
     protected $fillable = [
-        'question_vi',
-        'question_en',
-        'options',
-        'options_en',
-        'correct_index',
+        'box_index',
+        'url',
+        'label',
         'is_active',
     ];
 
     protected $casts = [
-        'options' => 'array',
-        'options_en' => 'array',
+        'box_index' => 'integer',
         'is_active' => 'boolean',
-        'correct_index' => 'integer',
     ];
 
     public function scopeActive(Builder $query): Builder

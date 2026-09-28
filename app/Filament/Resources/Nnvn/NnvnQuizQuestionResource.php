@@ -43,9 +43,13 @@ class NnvnQuizQuestionResource extends Resource
                     ->rows(3),
 
                 Forms\Components\TagsInput::make('options')
-                    ->label('Answer Options (comma separated)')
+                    ->label('Options (Vietnamese)')
                     ->placeholder('Add option')
                     ->required(),
+
+                Forms\Components\TagsInput::make('options_en')
+                    ->label('Options (English)')
+                    ->placeholder('Add option'),
 
                 Forms\Components\Select::make('correct_index')
                     ->label('Correct Answer Index')

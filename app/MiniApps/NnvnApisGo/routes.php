@@ -5,6 +5,7 @@ use App\MiniApps\NnvnApisGo\Controllers\PlayerController;
 use App\MiniApps\NnvnApisGo\Controllers\GameController;
 use App\MiniApps\NnvnApisGo\Controllers\LeaderboardController;
 use App\MiniApps\NnvnApisGo\Controllers\QuizController;
+use App\MiniApps\NnvnApisGo\Controllers\BoxController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +32,7 @@ Route::get('leaderboard/me', [LeaderboardController::class, 'me']);
 // Quiz
 Route::get('quiz/random', [QuizController::class, 'random']);
 Route::post('quiz/answer', [QuizController::class, 'answer']);
+
+// Boxes
+Route::get('boxes/config', [BoxController::class, 'config']);
+Route::post('boxes/click', [BoxController::class, 'click']);

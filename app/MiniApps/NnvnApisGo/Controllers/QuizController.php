@@ -21,6 +21,7 @@ class QuizController extends Controller
         }
 
         $questionField = $lang === 'en' ? 'question_en' : 'question_vi';
+        $optionsField = $lang === 'en' ? 'options_en' : 'options';
 
         $question = QuizQuestion::where('is_active', true)
             ->inRandomOrder()
@@ -30,10 +31,16 @@ class QuizController extends Controller
             return $this->error('No questions available', 404);
         }
 
+        $options = $question->{$optionsField};
+
+        if (empty($options) && $lang === 'en') {
+            $options = $question->options;
+        }
+
         return $this->success([
             'id' => $question->id,
             'question' => $question->{$questionField},
-            'options' => $question->options,
+            'options' => $options,
             'lang' => $lang,
         ], 'Question retrieved successfully');
     }
