@@ -15,6 +15,11 @@ class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
 
+    public static function canAccess(): bool
+    {
+        return !auth()->user()->isClient();
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-shield-check';
 
     protected static ?string $navigationGroup = 'User Management';

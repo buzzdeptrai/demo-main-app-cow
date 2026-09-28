@@ -13,6 +13,11 @@ class ActivityResource extends Resource
 {
     protected static ?string $model = Activity::class;
 
+    public static function canAccess(): bool
+    {
+        return !auth()->user()->isClient();
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-list';
 
     protected static ?string $navigationGroup = 'System';

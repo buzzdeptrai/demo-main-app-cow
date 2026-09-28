@@ -10,6 +10,11 @@ use Spatie\Activitylog\Models\Activity;
 
 class StatsOverview extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        return !auth()->user()?->isClient();
+    }
+
     protected function getCards(): array
     {
         return [

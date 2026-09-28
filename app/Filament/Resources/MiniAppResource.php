@@ -16,6 +16,11 @@ class MiniAppResource extends Resource
 {
     protected static ?string $model = MiniApp::class;
 
+    public static function canAccess(): bool
+    {
+        return !auth()->user()->isClient();
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $navigationGroup = 'App Management';

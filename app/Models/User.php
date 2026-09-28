@@ -33,7 +33,12 @@ class User extends Authenticatable implements HasMedia, FilamentUser
     // -- Filament Access --
     public function canAccessFilament(): bool
     {
-        return $this->hasRole(['admin', 'manager']);
+        return $this->hasRole(['admin', 'manager', 'client']);
+    }
+
+    public function isClient(): bool
+    {
+        return $this->hasRole('client') && !$this->hasRole(['admin', 'manager']);
     }
 
     // -- Relationships --

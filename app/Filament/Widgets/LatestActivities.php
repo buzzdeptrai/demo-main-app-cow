@@ -11,6 +11,11 @@ class LatestActivities extends BaseWidget
 {
     protected int | string | array $columnSpan = 'full';
 
+    public static function canView(): bool
+    {
+        return !auth()->user()?->isClient();
+    }
+
     protected static ?int $sort = 2;
 
     protected function getTableQuery(): Builder

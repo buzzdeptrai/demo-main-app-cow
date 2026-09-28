@@ -15,6 +15,11 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    public static function canAccess(): bool
+    {
+        return !auth()->user()->isClient();
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $navigationGroup = 'User Management';

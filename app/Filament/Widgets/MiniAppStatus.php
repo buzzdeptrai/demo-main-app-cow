@@ -10,6 +10,11 @@ class MiniAppStatus extends BaseWidget
 {
     protected static ?int $sort = 3;
 
+    public static function canView(): bool
+    {
+        return !auth()->user()?->isClient();
+    }
+
     protected function getCards(): array
     {
         $active = MiniApp::where('status', 'active')->count();
