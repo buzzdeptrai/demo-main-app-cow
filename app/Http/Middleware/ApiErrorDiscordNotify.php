@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiErrorDiscordNotify
 {
-    private const SKIP_CODES = [401, 404];
+    private const SKIP_CODES = [401];
 
     private const MIN_ERROR_CODE = 400;
 
