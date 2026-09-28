@@ -33,12 +33,16 @@ class GameService
             throw GameException::maxApisReached();
         }
 
-        $this->abandonActiveGames($playerId);
+        $abandonedGameId = $this->abandonActiveGames($playerId);
 
-        return Game::create([
+        $game = Game::create([
             'player_id' => $playerId,
             'status' => 'playing',
         ]);
+
+        $game->abandoned_game_id = $abandonedGameId;
+
+        return $game;
     }
 
     public function submitRound(Game $game, int $roundNumber, float $timeSeconds, bool $quizUsed): Round
@@ -118,11 +122,22 @@ class GameService
         });
     }
 
-    private function abandonActiveGames(int $playerId): void
+    private function abandonActiveGames(int $playerId): ?int
     {
-        Game::where('player_id', $playerId)
+        $activeGame = Game::where('player_id', $playerId)
             ->where('status', 'playing')
-            ->update(['status' => 'abandoned']);
+            ->first();
+
+        if (!$activeGame) {
+            return null;
+        }
+
+        $activeGame->update([
+            'status' => 'abandoned',
+            'completed_at' => Carbon::now(),
+        ]);
+
+        return $activeGame->id;
     }
 
     private function calculatePlayerRank(Player $player): int

@@ -9,11 +9,17 @@ class GameResource extends JsonResource
 {
     public function toArray($request): array
     {
-        return [
+        $data = [
             'game_id' => $this->id,
             'player_id' => $this->player_id,
             'status' => $this->status,
             'total_rounds' => Constants::TOTAL_ROUNDS,
         ];
+
+        if ($this->abandoned_game_id) {
+            $data['abandoned_game_id'] = $this->abandoned_game_id;
+        }
+
+        return $data;
     }
 }
