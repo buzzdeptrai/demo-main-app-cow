@@ -12,8 +12,9 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Filament\Models\Contracts\FilamentUser;
 
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable implements HasMedia, FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
     use HasRoles, InteractsWithMedia, LogsActivity;
@@ -28,6 +29,12 @@ class User extends Authenticatable implements HasMedia
         'email_verified_at' => 'datetime',
         'last_login_at' => 'datetime',
     ];
+
+    // -- Filament Access --
+    public function canAccessFilament(): bool
+    {
+        return $this->hasRole(['admin', 'manager']);
+    }
 
     // -- Relationships --
     public function miniApps()
