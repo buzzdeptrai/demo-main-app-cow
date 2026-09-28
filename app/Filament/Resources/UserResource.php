@@ -15,7 +15,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    public static function canAccess(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return !auth()->user()->isClient();
     }

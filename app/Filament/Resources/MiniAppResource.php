@@ -16,7 +16,7 @@ class MiniAppResource extends Resource
 {
     protected static ?string $model = MiniApp::class;
 
-    public static function canAccess(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return !auth()->user()->isClient();
     }

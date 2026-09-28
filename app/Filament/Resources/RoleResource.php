@@ -15,7 +15,7 @@ class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
 
-    public static function canAccess(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return !auth()->user()->isClient();
     }
