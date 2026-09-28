@@ -33,15 +33,6 @@ class GameException extends Exception
         );
     }
 
-    public static function dailyLimitExceeded(): self
-    {
-        return new self(
-            'Daily game limit exceeded. Please try again tomorrow.',
-            'DAILY_LIMIT',
-            429
-        );
-    }
-
     public static function gameNotActive(): self
     {
         return new self(

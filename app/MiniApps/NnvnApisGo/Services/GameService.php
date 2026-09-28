@@ -22,11 +22,7 @@ class GameService
 
     public function getPlayer(string $email): Player
     {
-        $player = Player::where('email', $email)->firstOrFail();
-
-        $player->games_today = $this->countGamesToday($player->id);
-
-        return $player;
+        return Player::where('email', $email)->firstOrFail();
     }
 
     public function startGame(int $playerId): Game
@@ -35,11 +31,6 @@ class GameService
 
         if ($player->total_apis_found >= Constants::MAX_APIS) {
             throw GameException::maxApisReached();
-        }
-
-        $gamesToday = $this->countGamesToday($playerId);
-        if ($gamesToday >= Constants::MAX_GAMES_PER_DAY) {
-            throw GameException::dailyLimitExceeded();
         }
 
         $this->abandonActiveGames($playerId);
@@ -125,13 +116,6 @@ class GameService
                 'rank' => $rank,
             ];
         });
-    }
-
-    private function countGamesToday(int $playerId): int
-    {
-        return Game::where('player_id', $playerId)
-            ->whereDate('created_at', Carbon::today())
-            ->count();
     }
 
     private function abandonActiveGames(int $playerId): void

@@ -116,5 +116,39 @@ curl -s -X POST http://localhost:8000/api/v1/auth/login \
   -d '{"email":"vuquocvietkg@gmail.com","password":"vietVu@main01227"}'
 ```
 
+## Mini App: NNVN Apis Go
+
+Game tìm ong Apis ẩn cho Novo Nordisk. Player đăng ký bằng email, chơi game tìm ong, trả lời quiz.
+
+**Base URL**: `/api/v1/app/nnvn-apis-go`
+
+**Structure**: `app/MiniApps/NnvnApisGo/` (Controllers, Services, Models, Requests, Resources, Exceptions, Constants, routes.php)
+
+**DB tables** (prefix `nnvn_`): players, games, rounds, quiz_questions
+
+**API Endpoints**:
+```
+POST   /players/register         # {name, email, phone}
+GET    /players/me?email=        # Player profile
+POST   /games/start              # {player_id}
+POST   /games/{id}/rounds        # {round_number, time_seconds, quiz_used}
+POST   /games/{id}/complete      # {gift_apis_found: bool}
+GET    /leaderboard              # Top players
+GET    /leaderboard/me?email=    # My rank
+GET    /quiz/random?lang=vi|en   # Random question
+POST   /quiz/answer              # {question_id, answer_index, game_id}
+```
+
+**Game Flow**: Register → Start → Round 1 → (Quiz) → Round 2 → Complete → Leaderboard
+
+**Constants**:
+- MAX_APIS = 50 (tổng số ong tối đa mỗi player)
+- TOTAL_ROUNDS = 2 (số round mỗi game)
+- APIS_PER_SESSION = 3 (+1 nếu gift_apis_found)
+- TIMER_SECONDS = 30
+- Round time: 2-30 giây
+
+**No auth required** — email-based identification, CORS-friendly cho game frontend.
+
 ## Plan
 Chi tiết implementation plan: `thoughts/shared/plans/2026-09-28-laravel8-admin-api.md`
