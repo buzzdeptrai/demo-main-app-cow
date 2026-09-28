@@ -3,6 +3,7 @@
 namespace App\MiniApps\NnvnApisGo\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\MiniApps\NnvnApisGo\Models\QuizAnswer;
 use App\MiniApps\NnvnApisGo\Models\QuizQuestion;
 use App\MiniApps\NnvnApisGo\Requests\AnswerQuizRequest;
 use App\Traits\ApiResponse;
@@ -51,6 +52,13 @@ class QuizController extends Controller
 
         $question = QuizQuestion::findOrFail($validated['question_id']);
         $isCorrect = (int) $validated['answer_index'] === (int) $question->correct_index;
+
+        QuizAnswer::create([
+            'game_id' => $validated['game_id'],
+            'question_id' => $validated['question_id'],
+            'answer_index' => $validated['answer_index'],
+            'is_correct' => $isCorrect,
+        ]);
 
         return $this->success([
             'correct' => $isCorrect,

@@ -2,8 +2,10 @@
 
 namespace App\Filament\Widgets;
 
+use App\MiniApps\NnvnApisGo\Models\BoxClick;
 use App\MiniApps\NnvnApisGo\Models\Game;
 use App\MiniApps\NnvnApisGo\Models\Player;
+use App\MiniApps\NnvnApisGo\Models\QuizAnswer;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +43,16 @@ class NnvnStatsWidget extends BaseWidget
                 ->description('Completed games')
                 ->color('danger')
                 ->icon('heroicon-o-clock'),
+
+            Card::make('Quiz Answers', QuizAnswer::count())
+                ->description('Total quiz answers')
+                ->color('primary')
+                ->icon('heroicon-o-question-mark-circle'),
+
+            Card::make('Box Clicks', BoxClick::count())
+                ->description('Total box clicks')
+                ->color('success')
+                ->icon('heroicon-o-cursor-click'),
         ];
     }
 }
