@@ -9,84 +9,84 @@ class NnvnQuizQuestionSeeder extends Seeder
 {
     public function run(): void
     {
+        // Xóa hết câu hỏi cũ
+        QuizQuestion::query()->delete();
+
         $questions = [
             [
                 'question_vi' => 'Novo Nordisk được thành lập vào năm nào?',
                 'question_en' => 'What year was Novo Nordisk founded?',
-                'options' => ['1920', '1923', '1930', '1935'],
-                'options_en' => ['1920', '1923', '1930', '1935'],
-                'correct_index' => 1,
+                'options' => ['1923', '1945', '1980'],
+                'options_en' => ['1923', '1945', '1980'],
+                'correct_index' => 0,
             ],
             [
-                'question_vi' => 'Trụ sở chính của Novo Nordisk đặt tại quốc gia nào?',
+                'question_vi' => 'Trụ sở chính Novo Nordisk ở quốc gia nào?',
                 'question_en' => 'In which country is Novo Nordisk headquartered?',
-                'options' => ['Thụy Điển', 'Đan Mạch', 'Na Uy', 'Phần Lan'],
-                'options_en' => ['Sweden', 'Denmark', 'Norway', 'Finland'],
+                'options' => ['Đan Mạch', 'Thụy Điển', 'Na Uy'],
+                'options_en' => ['Denmark', 'Sweden', 'Norway'],
+                'correct_index' => 0,
+            ],
+            [
+                'question_vi' => 'NNVN là viết tắt của?',
+                'question_en' => 'What does NNVN stand for?',
+                'options' => ['Novo Nordisk Việt Nam', 'National Network VN', 'New Nord VN'],
+                'options_en' => ['Novo Nordisk Vietnam', 'National Network VN', 'New Nord VN'],
+                'correct_index' => 0,
+            ],
+            [
+                'question_vi' => 'Novo Nordisk chuyên về lĩnh vực nào?',
+                'question_en' => 'What field does Novo Nordisk specialize in?',
+                'options' => ['Công nghệ thông tin', 'Dược phẩm & y tế', 'Năng lượng'],
+                'options_en' => ['Information technology', 'Pharmaceuticals & healthcare', 'Energy'],
                 'correct_index' => 1,
             ],
             [
-                'question_vi' => 'Novo Nordisk nổi tiếng nhất trong lĩnh vực nào?',
-                'question_en' => 'Novo Nordisk is most famous for which field?',
-                'options' => ['Tim mạch', 'Tiểu đường', 'Ung thư', 'Thần kinh'],
-                'options_en' => ['Cardiology', 'Diabetes', 'Oncology', 'Neurology'],
+                'question_vi' => 'Digital Week nhằm mục đích gì?',
+                'question_en' => 'What is the purpose of Digital Week?',
+                'options' => ['Nghỉ phép', 'Chuyển đổi số & đổi mới', 'Tuyển dụng'],
+                'options_en' => ['Vacation', 'Digital transformation & innovation', 'Recruitment'],
                 'correct_index' => 1,
             ],
             [
-                'question_vi' => 'Apis trong tiếng Latin có nghĩa là gì?',
-                'question_en' => 'What does "Apis" mean in Latin?',
-                'options' => ['Kiến', 'Ong', 'Bướm', 'Chuồn chuồn'],
-                'options_en' => ['Ant', 'Bee', 'Butterfly', 'Dragonfly'],
+                'question_vi' => 'Logo Novo Nordisk có hình gì?',
+                'question_en' => 'What is featured in the Novo Nordisk logo?',
+                'options' => ['Con bò Apis', 'Ngôi sao', 'Trái tim'],
+                'options_en' => ['The Apis bull', 'A star', 'A heart'],
+                'correct_index' => 0,
+            ],
+            [
+                'question_vi' => 'Phòng Collab Zone dùng để làm gì?',
+                'question_en' => 'What is the Collab Zone used for?',
+                'options' => ['Họp chính thức', 'Brainstorm & sáng tạo', 'Lưu trữ hồ sơ'],
+                'options_en' => ['Formal meetings', 'Brainstorming & creativity', 'File storage'],
                 'correct_index' => 1,
             ],
             [
-                'question_vi' => 'Loài ong mật thuộc chi nào?',
-                'question_en' => 'What genus do honey bees belong to?',
-                'options' => ['Bombus', 'Apis', 'Vespa', 'Osmia'],
-                'options_en' => ['Bombus', 'Apis', 'Vespa', 'Osmia'],
+                'question_vi' => 'Có bao nhiêu phòng trong văn phòng NNVN?',
+                'question_en' => 'How many rooms are in the NNVN office?',
+                'options' => ['3 phòng', '5 phòng', '8 phòng'],
+                'options_en' => ['3 rooms', '5 rooms', '8 rooms'],
                 'correct_index' => 1,
             ],
             [
-                'question_vi' => 'Một con ong thợ có bao nhiêu đôi cánh?',
-                'question_en' => 'How many pairs of wings does a worker bee have?',
-                'options' => ['1', '2', '3', '4'],
-                'options_en' => ['1', '2', '3', '4'],
+                'question_vi' => 'GM Room là phòng của ai?',
+                'question_en' => 'Who uses the GM Room?',
+                'options' => ['Nhân viên', 'Giám đốc', 'Khách hàng'],
+                'options_en' => ['Employees', 'General Manager', 'Clients'],
                 'correct_index' => 1,
             ],
             [
-                'question_vi' => 'Ong mật giao tiếp bằng cách nào?',
-                'question_en' => 'How do honey bees communicate?',
-                'options' => ['Tiếng kêu', 'Điệu nhảy', 'Màu sắc', 'Mùi hương'],
-                'options_en' => ['Sound', 'Dance', 'Color', 'Scent'],
-                'correct_index' => 1,
-            ],
-            [
-                'question_vi' => 'Insulin được phát hiện vào năm nào?',
-                'question_en' => 'In what year was insulin discovered?',
-                'options' => ['1918', '1921', '1925', '1930'],
-                'options_en' => ['1918', '1921', '1925', '1930'],
-                'correct_index' => 1,
-            ],
-            [
-                'question_vi' => 'Tiểu đường type 1 là do cơ quan nào bị tổn thương?',
-                'question_en' => 'Type 1 diabetes is caused by damage to which organ?',
-                'options' => ['Gan', 'Tụy', 'Thận', 'Tim'],
-                'options_en' => ['Liver', 'Pancreas', 'Kidney', 'Heart'],
-                'correct_index' => 1,
-            ],
-            [
-                'question_vi' => 'Logo của Novo Nordisk có hình con vật gì?',
-                'question_en' => 'What animal is in the Novo Nordisk logo?',
-                'options' => ['Sư tử', 'Bò Apis', 'Đại bàng', 'Không có con vật'],
-                'options_en' => ['Lion', 'Apis Bull', 'Eagle', 'No animal'],
-                'correct_index' => 1,
+                'question_vi' => 'Novo Nordisk hoạt động ở bao nhiêu quốc gia?',
+                'question_en' => 'In how many countries does Novo Nordisk operate?',
+                'options' => ['Hơn 80', 'Dưới 20', 'Đúng 50'],
+                'options_en' => ['Over 80', 'Under 20', 'Exactly 50'],
+                'correct_index' => 0,
             ],
         ];
 
         foreach ($questions as $question) {
-            QuizQuestion::updateOrCreate(
-                ['question_vi' => $question['question_vi']],
-                array_merge($question, ['is_active' => true])
-            );
+            QuizQuestion::create(array_merge($question, ['is_active' => true]));
         }
     }
 }
