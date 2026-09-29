@@ -1,22 +1,17 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class MakeEmailNullableInNnvnPlayersTable extends Migration
 {
     public function up()
     {
-        Schema::table('nnvn_players', function (Blueprint $table) {
-            $table->string('email', 255)->nullable()->unique()->change();
-        });
+        DB::statement('ALTER TABLE nnvn_players MODIFY email VARCHAR(255) NULL');
     }
 
     public function down()
     {
-        Schema::table('nnvn_players', function (Blueprint $table) {
-            $table->string('email', 255)->unique()->change();
-        });
+        DB::statement('ALTER TABLE nnvn_players MODIFY email VARCHAR(255) NOT NULL');
     }
 }
