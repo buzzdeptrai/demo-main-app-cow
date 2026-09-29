@@ -15,7 +15,9 @@ class SubmitRoundRequest extends FormRequest
     {
         return [
             'round_number' => ['required', 'integer', 'in:1,2'],
-            'time_seconds' => ['required', 'numeric', 'min:2', $this->input('quiz_used') ? 'max:120' : 'max:30'],
+            'time_seconds' => $this->input('quiz_used')
+                ? ['required', 'numeric', 'min:2']
+                : ['required', 'numeric', 'min:2', 'max:30'],
             'quiz_used' => ['required', 'boolean'],
         ];
     }
