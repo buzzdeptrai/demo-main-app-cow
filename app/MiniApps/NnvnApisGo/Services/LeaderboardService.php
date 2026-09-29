@@ -17,7 +17,6 @@ class LeaderboardService
             return [
                 'rank' => $index + 1,
                 'name' => $player->name,
-                'email' => $this->maskEmail($player->email),
                 'total_time' => $player->best_total_time,
                 'total_apis' => $player->total_apis_found,
                 'total_sessions' => $player->total_sessions,
@@ -25,9 +24,9 @@ class LeaderboardService
         })->toArray();
     }
 
-    public function getPlayerRank(string $email): array
+    public function getPlayerRank(int $playerId): array
     {
-        $player = Player::where('email', $email)->firstOrFail();
+        $player = Player::findOrFail($playerId);
 
         $rank = 0;
         if ($player->best_total_time !== null) {
@@ -39,19 +38,9 @@ class LeaderboardService
         return [
             'rank' => $rank,
             'name' => $player->name,
-            'email' => $this->maskEmail($player->email),
             'total_time' => $player->best_total_time,
             'total_apis' => $player->total_apis_found,
             'total_sessions' => $player->total_sessions,
         ];
-    }
-
-    private function maskEmail(string $email): string
-    {
-        $parts = explode('@', $email);
-        $local = $parts[0];
-        $masked = substr($local, 0, 3) . '...';
-
-        return $masked . 'com';
     }
 }

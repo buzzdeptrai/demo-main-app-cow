@@ -24,8 +24,7 @@ class PlayerController extends Controller
     public function register(RegisterPlayerRequest $request)
     {
         $player = $this->gameService->registerOrLogin(
-            $request->validated()['name'],
-            $request->validated()['email']
+            $request->validated()['name']
         );
 
         return $this->success(
@@ -36,14 +35,14 @@ class PlayerController extends Controller
 
     public function me(Request $request)
     {
-        $email = $request->query('email');
+        $id = $request->query('id');
 
-        if (!$email) {
-            return $this->error('Email is required', 400);
+        if (!$id) {
+            return $this->error('Player ID is required', 400);
         }
 
         try {
-            $player = $this->gameService->getPlayer($email);
+            $player = $this->gameService->getPlayer((int) $id);
             return $this->success(
                 new PlayerResource($player),
                 'Player retrieved successfully'

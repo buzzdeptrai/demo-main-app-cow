@@ -14,7 +14,6 @@ class PlayerResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'email' => $this->email,
             'total_apis_found' => $totalApis,
             'total_sessions' => $this->total_sessions ?? 0,
             'best_total_time' => $this->best_total_time,

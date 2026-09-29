@@ -30,14 +30,14 @@ class LeaderboardController extends Controller
 
     public function me(Request $request)
     {
-        $email = $request->query('email');
+        $id = $request->query('id');
 
-        if (!$email) {
-            return $this->error('Email is required', 400);
+        if (!$id) {
+            return $this->error('Player ID is required', 400);
         }
 
         try {
-            $rank = $this->leaderboardService->getPlayerRank($email);
+            $rank = $this->leaderboardService->getPlayerRank((int) $id);
             return $this->success($rank, 'Player rank retrieved successfully');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return $this->error('Player not found', 404);

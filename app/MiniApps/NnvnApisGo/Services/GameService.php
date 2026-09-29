@@ -12,17 +12,14 @@ use Illuminate\Support\Facades\DB;
 
 class GameService
 {
-    public function registerOrLogin(string $name, string $email): Player
+    public function registerOrLogin(string $name): Player
     {
-        return Player::firstOrCreate(
-            ['email' => $email],
-            ['name' => $name]
-        );
+        return Player::create(['name' => $name]);
     }
 
-    public function getPlayer(string $email): Player
+    public function getPlayer(int $id): Player
     {
-        return Player::where('email', $email)->firstOrFail();
+        return Player::findOrFail($id);
     }
 
     public function startGame(int $playerId): Game
