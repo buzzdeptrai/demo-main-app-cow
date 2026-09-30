@@ -104,7 +104,7 @@ class NnvnPlayerResource extends Resource
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
             ])
-            ->defaultSort('round_apis_found', 'desc')
+            ->defaultSort('updated_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('progress')
                     ->options([
