@@ -21,11 +21,11 @@ class LeaderboardController extends Controller
     public function index(Request $request)
     {
         $limit = (int) $request->query('limit', 10);
-        $limit = max(1, min($limit, 100));
+        $limit = max(1, min($limit, 50));
 
-        $leaderboard = $this->leaderboardService->getLeaderboard($limit);
+        $result = $this->leaderboardService->getLeaderboard($limit);
 
-        return $this->success($leaderboard, 'Leaderboard retrieved successfully');
+        return $this->success($result, 'Leaderboard retrieved successfully');
     }
 
     public function me(Request $request)

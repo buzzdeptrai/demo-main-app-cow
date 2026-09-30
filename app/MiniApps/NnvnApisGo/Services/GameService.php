@@ -14,7 +14,7 @@ class GameService
 {
     public function registerOrLogin(string $name): Player
     {
-        return Player::create(['name' => $name]);
+        return Player::firstOrCreate(['name' => $name]);
     }
 
     public function getPlayer(int $id): Player
@@ -26,7 +26,7 @@ class GameService
     {
         $player = Player::findOrFail($playerId);
 
-        if ($player->total_apis_found >= Constants::MAX_APIS) {
+        if ($player->round_apis_found >= Constants::MAX_APIS) {
             throw GameException::maxApisReached();
         }
 
@@ -39,6 +39,12 @@ class GameService
 
         $game->abandoned_game_id = $abandonedGameId;
 
+        // Check gift availability globally
+        $globalGiftCount = Game::where('gift_apis_found', true)
+            ->where('status', 'completed')
+            ->count();
+        $game->gift_apis_available = $globalGiftCount < Constants::MAX_GIFT_APIS_GLOBAL;
+
         return $game;
     }
 
@@ -48,7 +54,7 @@ class GameService
             throw GameException::gameNotActive();
         }
 
-        if ($timeSeconds < Constants::MIN_ROUND_TIME || $timeSeconds > Constants::MAX_ROUND_TIME) {
+        if ($timeSeconds < Constants::MIN_ROUND_TIME) {
             throw GameException::invalidRoundTime();
         }
 
@@ -78,43 +84,60 @@ class GameService
             $rounds = Round::where('game_id', $game->id)->get();
             $totalTime = $rounds->sum('time_seconds');
             $quizCount = $rounds->where('quiz_used', true)->count();
-            $apisFound = Constants::APIS_PER_SESSION + ($giftApisFound ? 1 : 0);
+            $apisFound = Constants::APIS_PER_SESSION;
+
+            // Gift apis logic: only award if globally available
+            $giftApisAwarded = false;
+            if ($giftApisFound) {
+                $globalGiftCount = Game::where('gift_apis_found', true)
+                    ->where('status', 'completed')
+                    ->count();
+                if ($globalGiftCount < Constants::MAX_GIFT_APIS_GLOBAL) {
+                    $giftApisAwarded = true;
+                }
+            }
 
             $game->update([
                 'status' => 'completed',
                 'total_time' => $totalTime,
                 'quiz_count' => $quizCount,
-                'apis_found' => $apisFound,
-                'gift_apis_found' => $giftApisFound,
+                'apis_found' => $apisFound + ($giftApisAwarded ? 1 : 0),
+                'gift_apis_found' => $giftApisAwarded,
                 'completed_at' => Carbon::now(),
             ]);
 
             $player = Player::findOrFail($game->player_id);
-            $newTotalApis = min($player->total_apis_found + $apisFound, Constants::MAX_APIS);
-            $newTotalSessions = $player->total_sessions + 1;
-
-            $updateData = [
-                'total_apis_found' => $newTotalApis,
-                'total_sessions' => $newTotalSessions,
-            ];
+            $player->round_apis_found = min(
+                $player->round_apis_found + $apisFound,
+                Constants::MAX_APIS
+            );
+            if ($giftApisAwarded) {
+                $player->gift_apis_found += 1;
+            }
+            $player->total_sessions += 1;
 
             if ($player->best_total_time === null || $totalTime < $player->best_total_time) {
-                $updateData['best_total_time'] = $totalTime;
+                $player->best_total_time = $totalTime;
             }
 
-            $player->update($updateData);
+            $player->save();
             $player->refresh();
 
             $rank = $this->calculatePlayerRank($player);
 
+            $isBestTime = $player->best_total_time !== null && $player->best_total_time == $totalTime;
+
             return [
                 'game_id' => $game->id,
-                'total_time' => round($totalTime, 2),
+                'total_time' => round($totalTime, 1),
                 'quiz_count' => $quizCount,
-                'apis_found' => $apisFound,
-                'total_apis' => $player->total_apis_found,
-                'best_total_time' => $player->best_total_time,
-                'rank' => $rank,
+                'round_apis_found' => $apisFound,
+                'gift_apis_found' => $giftApisAwarded,
+                'player_round_apis' => $player->round_apis_found,
+                'player_gift_apis' => $player->gift_apis_found,
+                'player_remaining_round_apis' => max(0, Constants::MAX_APIS - $player->round_apis_found),
+                'is_best_time' => $isBestTime,
+                'leaderboard_rank' => $rank,
             ];
         });
     }

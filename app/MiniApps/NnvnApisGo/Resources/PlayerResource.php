@@ -9,16 +9,19 @@ class PlayerResource extends JsonResource
 {
     public function toArray($request): array
     {
-        $totalApis = $this->total_apis_found ?? 0;
+        $roundApis = $this->round_apis_found ?? 0;
+        $giftApis = $this->gift_apis_found ?? 0;
 
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'total_apis_found' => $totalApis,
+            'round_apis_found' => $roundApis,
+            'gift_apis_found' => $giftApis,
+            'total_apis' => $roundApis + $giftApis,
+            'remaining_round_apis' => max(0, Constants::MAX_APIS - $roundApis),
+            'can_play' => $roundApis < Constants::MAX_APIS,
             'total_sessions' => $this->total_sessions ?? 0,
             'best_total_time' => $this->best_total_time,
-            'can_play' => $totalApis < Constants::MAX_APIS,
-            'remaining_apis' => max(0, Constants::MAX_APIS - $totalApis),
         ];
     }
 }

@@ -18,7 +18,7 @@ class NnvnStatsWidget extends BaseWidget
     {
         $totalPlayers = Player::count();
         $totalCompleted = Game::where('status', 'completed')->count();
-        $totalApisFound = Player::sum('total_apis_found');
+        $totalApisFound = Player::selectRaw('SUM(round_apis_found + gift_apis_found) as total')->value('total') ?? 0;
         $avgGameTime = Game::where('status', 'completed')
             ->whereNotNull('total_time')
             ->avg('total_time');

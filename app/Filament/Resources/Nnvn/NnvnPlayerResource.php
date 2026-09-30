@@ -51,15 +51,19 @@ class NnvnPlayerResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('total_apis_found')
-                    ->label('APIs Found')
+                Tables\Columns\TextColumn::make('round_apis_found')
+                    ->label('Round APIs')
                     ->formatStateUsing(fn ($state) => "{$state}/{$maxApis}")
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('gift_apis_found')
+                    ->label('Gift APIs')
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('progress')
                     ->label('Progress')
                     ->getStateUsing(function (Player $record) use ($maxApis) {
-                        if ($record->total_apis_found >= $maxApis) {
+                        if ($record->round_apis_found >= $maxApis) {
                             return 'Maxed Out';
                         }
                         if ($record->total_sessions > 0) {
@@ -86,9 +90,10 @@ class NnvnPlayerResource extends Resource
                 Tables\Columns\TextColumn::make('rank')
                     ->label('Rank')
                     ->getStateUsing(function (Player $record) {
-                        return Player::where('total_apis_found', '>', $record->total_apis_found)
-                            ->orWhere(function ($q) use ($record) {
-                                $q->where('total_apis_found', $record->total_apis_found)
+                        $totalApis = $record->round_apis_found + $record->gift_apis_found;
+                        return Player::whereRaw('(round_apis_found + gift_apis_found) > ?', [$totalApis])
+                            ->orWhere(function ($q) use ($record, $totalApis) {
+                                $q->whereRaw('(round_apis_found + gift_apis_found) = ?', [$totalApis])
                                     ->whereNotNull('best_total_time')
                                     ->where('best_total_time', '<', $record->best_total_time ?? PHP_INT_MAX);
                             })
@@ -99,7 +104,7 @@ class NnvnPlayerResource extends Resource
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
             ])
-            ->defaultSort('total_apis_found', 'desc')
+            ->defaultSort('round_apis_found', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('progress')
                     ->options([
@@ -114,7 +119,7 @@ class NnvnPlayerResource extends Resource
                             return $query->where('total_sessions', '>', 0);
                         }
                         if ($data['value'] === 'maxed_out') {
-                            return $query->where('total_apis_found', '>=', $maxApis);
+                            return $query->where('round_apis_found', '>=', $maxApis);
                         }
 
                         return $query;

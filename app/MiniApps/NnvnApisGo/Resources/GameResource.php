@@ -14,6 +14,7 @@ class GameResource extends JsonResource
             'player_id' => $this->player_id,
             'status' => $this->status,
             'total_rounds' => Constants::TOTAL_ROUNDS,
+            'gift_apis_available' => $this->gift_apis_available ?? false,
         ];
 
         if ($this->abandoned_game_id) {

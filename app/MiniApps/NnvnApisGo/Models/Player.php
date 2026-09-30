@@ -13,13 +13,15 @@ class Player extends Model
     protected $fillable = [
         'name',
         'email',
-        'total_apis_found',
+        'round_apis_found',
+        'gift_apis_found',
         'total_sessions',
         'best_total_time',
     ];
 
     protected $casts = [
-        'total_apis_found' => 'integer',
+        'round_apis_found' => 'integer',
+        'gift_apis_found' => 'integer',
         'total_sessions' => 'integer',
         'best_total_time' => 'decimal:1',
     ];
@@ -34,14 +36,22 @@ class Player extends Model
      */
     public function canPlay(): bool
     {
-        return $this->total_apis_found < Constants::MAX_APIS;
+        return $this->round_apis_found < Constants::MAX_APIS;
     }
 
     /**
-     * Get the number of APIs remaining to be found.
+     * Get the number of round APIs remaining to be found.
      */
-    public function remainingApis(): int
+    public function remainingRoundApis(): int
     {
-        return Constants::MAX_APIS - $this->total_apis_found;
+        return max(0, Constants::MAX_APIS - $this->round_apis_found);
+    }
+
+    /**
+     * Get total APIs (round + gift).
+     */
+    public function totalApis(): int
+    {
+        return $this->round_apis_found + $this->gift_apis_found;
     }
 }

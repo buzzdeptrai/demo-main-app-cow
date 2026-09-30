@@ -56,11 +56,14 @@ class GameController extends Controller
                 $validated['quiz_used']
             );
 
+            $roundsCompleted = \App\MiniApps\NnvnApisGo\Models\Round::where('game_id', $gameId)->count();
+
             return $this->created([
-                'round_id' => $round->id,
                 'round_number' => $round->round_number,
                 'time_seconds' => $round->time_seconds,
                 'quiz_used' => $round->quiz_used,
+                'rounds_completed' => $roundsCompleted,
+                'rounds_remaining' => \App\MiniApps\NnvnApisGo\Constants::TOTAL_ROUNDS - $roundsCompleted,
             ], 'Round submitted successfully');
         } catch (GameException $e) {
             return $this->error($e->getMessage(), $e->getHttpCode(), $e->getErrorCode());
