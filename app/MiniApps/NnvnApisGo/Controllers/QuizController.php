@@ -16,6 +16,7 @@ class QuizController extends Controller
     public function random(Request $request)
     {
         $lang = $request->query('lang', 'vi');
+        $gameId = $request->query('game_id');
 
         if (!in_array($lang, ['vi', 'en'])) {
             return $this->error('Invalid language. Use vi or en.', 400);
@@ -24,9 +25,21 @@ class QuizController extends Controller
         $questionField = $lang === 'en' ? 'question_en' : 'question_vi';
         $optionsField = $lang === 'en' ? 'options_en' : 'options';
 
-        $question = QuizQuestion::where('is_active', true)
-            ->inRandomOrder()
-            ->first();
+        $query = QuizQuestion::where('is_active', true);
+
+        if ($gameId) {
+            $recentIds = QuizAnswer::where('game_id', $gameId)
+                ->latest('id')
+                ->limit(3)
+                ->pluck('question_id')
+                ->toArray();
+
+            if (!empty($recentIds)) {
+                $query->whereNotIn('id', $recentIds);
+            }
+        }
+
+        $question = $query->inRandomOrder()->first();
 
         if (!$question) {
             return $this->error('No questions available', 404);
