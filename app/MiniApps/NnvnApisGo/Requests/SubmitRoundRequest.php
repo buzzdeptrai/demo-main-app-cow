@@ -14,7 +14,7 @@ class SubmitRoundRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'round_number' => ['required', 'integer', 'in:1,2,3,4,5'],
+            'round_number' => ['required', 'integer', 'in:1'],
             'time_seconds' => ['required', 'numeric', 'min:2'],
             'quiz_used' => ['required', 'boolean'],
         ];
