@@ -162,12 +162,21 @@ class GameService
 
     private function calculatePlayerRank(Player $player): int
     {
-        if ($player->best_total_time === null) {
+        if ($player->total_sessions < 1) {
             return 0;
         }
 
-        return Player::whereNotNull('best_total_time')
-            ->where('best_total_time', '<', $player->best_total_time)
+        $totalApis = $player->round_apis_found + $player->gift_apis_found;
+
+        return Player::where('total_sessions', '>', 0)
+            ->where(function ($q) use ($totalApis, $player) {
+                $q->whereRaw('(round_apis_found + gift_apis_found) > ?', [$totalApis])
+                  ->orWhere(function ($q2) use ($totalApis, $player) {
+                      $q2->whereRaw('(round_apis_found + gift_apis_found) = ?', [$totalApis])
+                         ->whereNotNull('best_total_time')
+                         ->where('best_total_time', '<', $player->best_total_time);
+                  });
+            })
             ->count() + 1;
     }
 }

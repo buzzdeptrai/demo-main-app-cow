@@ -9,26 +9,23 @@ class LeaderboardService
 {
     public function getLeaderboard(int $limit = 10): array
     {
-        $totalPlayers = Player::whereNotNull('best_total_time')->count();
+        $totalPlayers = Player::where('total_sessions', '>', 0)->count();
 
-        $players = Player::whereNotNull('best_total_time')
+        $players = Player::where('total_sessions', '>', 0)
+            ->orderByRaw('(round_apis_found + gift_apis_found) DESC')
             ->orderBy('best_total_time', 'asc')
             ->limit($limit)
             ->get();
 
         $entries = $players->map(function ($player, $index) {
-            $lastGame = Game::where('player_id', $player->id)
-                ->where('status', 'completed')
-                ->latest('completed_at')
-                ->first();
-
             return [
                 'rank' => $index + 1,
                 'name' => $player->name,
-                'total_time' => $player->best_total_time,
-                'quiz_count' => $lastGame ? $lastGame->quiz_count : 0,
+                'round_apis' => $player->round_apis_found,
+                'gift_apis' => $player->gift_apis_found,
                 'total_apis' => $player->round_apis_found + $player->gift_apis_found,
-                'date' => $lastGame ? $lastGame->completed_at->format('Y-m-d') : null,
+                'best_time' => $player->best_total_time,
+                'total_sessions' => $player->total_sessions,
             ];
         })->toArray();
 
@@ -41,23 +38,30 @@ class LeaderboardService
     public function getPlayerRank(int $playerId): array
     {
         $player = Player::findOrFail($playerId);
-        $totalPlayers = Player::whereNotNull('best_total_time')->count();
+        $totalPlayers = Player::where('total_sessions', '>', 0)->count();
+        $totalApis = $player->round_apis_found + $player->gift_apis_found;
 
         $rank = 0;
-        if ($player->best_total_time !== null) {
-            $rank = Player::whereNotNull('best_total_time')
-                ->where('best_total_time', '<', $player->best_total_time)
+        if ($player->total_sessions > 0) {
+            $rank = Player::where('total_sessions', '>', 0)
+                ->where(function ($q) use ($totalApis, $player) {
+                    $q->whereRaw('(round_apis_found + gift_apis_found) > ?', [$totalApis])
+                      ->orWhere(function ($q2) use ($totalApis, $player) {
+                          $q2->whereRaw('(round_apis_found + gift_apis_found) = ?', [$totalApis])
+                             ->whereNotNull('best_total_time')
+                             ->where('best_total_time', '<', $player->best_total_time);
+                      });
+                })
                 ->count() + 1;
         }
 
         return [
             'rank' => $rank,
             'name' => $player->name,
-            'total_time' => $player->best_total_time,
-            'quiz_count' => Game::where('player_id', $player->id)
-                ->where('status', 'completed')
-                ->sum('quiz_count'),
-            'total_apis' => $player->round_apis_found + $player->gift_apis_found,
+            'round_apis' => $player->round_apis_found,
+            'gift_apis' => $player->gift_apis_found,
+            'total_apis' => $totalApis,
+            'best_time' => $player->best_total_time,
             'total_sessions' => $player->total_sessions,
             'total_players' => $totalPlayers,
         ];

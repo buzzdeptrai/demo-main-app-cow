@@ -19,6 +19,39 @@
         </x-filament::card>
     </div>
 
+    {{-- Leaderboard --}}
+    <x-filament::card>
+        <h2 class="text-lg font-semibold mb-4">Leaderboard (Top 50)</h2>
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b">
+                    <th class="text-left py-2">Rank</th>
+                    <th class="text-left py-2">Name</th>
+                    <th class="text-right py-2">Round APIs</th>
+                    <th class="text-right py-2">Gift APIs</th>
+                    <th class="text-right py-2">Total APIs</th>
+                    <th class="text-right py-2">Best Time</th>
+                    <th class="text-right py-2">Sessions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($leaderboard as $index => $player)
+                <tr class="border-b {{ $index < 3 ? 'bg-yellow-50' : '' }}">
+                    <td class="py-2 font-semibold">{{ $index + 1 }}</td>
+                    <td class="py-2">{{ $player->name }}</td>
+                    <td class="py-2 text-right">{{ $player->round_apis_found }}/50</td>
+                    <td class="py-2 text-right text-purple-600">{{ $player->gift_apis_found }}</td>
+                    <td class="py-2 text-right font-bold">{{ $player->round_apis_found + $player->gift_apis_found }}</td>
+                    <td class="py-2 text-right">{{ $player->best_total_time ? $player->best_total_time . 's' : '-' }}</td>
+                    <td class="py-2 text-right">{{ $player->total_sessions }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="7" class="py-4 text-center text-gray-400">No data yet</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </x-filament::card>
+
     {{-- Box Click Report --}}
     <x-filament::card>
         <h2 class="text-lg font-semibold mb-4">Box Click Report</h2>

@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\MiniApps\NnvnApisGo\Models\BoxClick;
 use App\MiniApps\NnvnApisGo\Models\Game;
+use App\MiniApps\NnvnApisGo\Models\Player;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\DB;
 
@@ -26,8 +27,9 @@ class NnvnReports extends Page
         $boxClicks = $this->getBoxClickReport();
         $quizStats = $this->getQuizReport();
         $summary = $this->getSummary();
+        $leaderboard = $this->getLeaderboard();
 
-        return compact('boxClicks', 'quizStats', 'summary');
+        return compact('boxClicks', 'quizStats', 'summary', 'leaderboard');
     }
 
     private function getBoxClickReport()
@@ -69,5 +71,14 @@ class NnvnReports extends Page
             'total_box_clicks' => BoxClick::count(),
             'apis_clicks' => BoxClick::where('is_apis', true)->count(),
         ];
+    }
+
+    private function getLeaderboard()
+    {
+        return Player::where('total_sessions', '>', 0)
+            ->orderByRaw('(round_apis_found + gift_apis_found) DESC')
+            ->orderBy('best_total_time', 'asc')
+            ->limit(50)
+            ->get();
     }
 }
