@@ -47,10 +47,6 @@ class NnvnPlayerResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable()
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('round_apis_found')
                     ->label('Round APIs')
                     ->formatStateUsing(fn ($state) => "{$state}/{$maxApis}")
