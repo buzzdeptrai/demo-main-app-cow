@@ -86,11 +86,12 @@ class GameService
             $quizCount = $rounds->where('quiz_used', true)->count();
             $apisFound = Constants::APIS_PER_SESSION;
 
-            // Gift apis logic: only award if globally available
+            // Gift apis logic: only award if globally available (with lock to prevent race condition)
             $giftApisAwarded = false;
             if ($giftApisFound) {
                 $globalGiftCount = Game::where('gift_apis_found', true)
                     ->where('status', 'completed')
+                    ->lockForUpdate()
                     ->count();
                 if ($globalGiftCount < Constants::MAX_GIFT_APIS_GLOBAL) {
                     $giftApisAwarded = true;
