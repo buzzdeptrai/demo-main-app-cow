@@ -9,22 +9,21 @@ class NnvnBoxConfigSeeder extends Seeder
 {
     public function run(): void
     {
-        $boxes = [];
+        for ($i = 0; $i < 10; $i++) {
+            $boxIndex = $i;
+            $boxNumber = $i + 1;
 
-        for ($i = 0; $i < 15; $i++) {
-            $boxes[] = [
-                'box_index' => $i,
-                'url' => "https://example.com/box-{$i}",
-                'label' => "Box {$i}",
-                'is_active' => true,
-            ];
-        }
-
-        foreach ($boxes as $box) {
-            BoxConfig::firstOrCreate(
-                ['box_index' => $box['box_index']],
-                $box
+            BoxConfig::updateOrCreate(
+                ['box_index' => $boxIndex],
+                [
+                    'url' => "https://www.novonordisk.vn/?box={$boxNumber}",
+                    'label' => "Box {$boxNumber}",
+                    'is_active' => true,
+                ]
             );
         }
+
+        // Deactivate old boxes (10-14) if they exist
+        BoxConfig::where('box_index', '>=', 10)->update(['is_active' => false]);
     }
 }
