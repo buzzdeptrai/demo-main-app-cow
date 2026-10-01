@@ -89,4 +89,24 @@ class GameController extends Controller
             return $this->error($e->getMessage(), $e->getHttpCode(), $e->getErrorCode());
         }
     }
+
+    public function claimGiftApis(int $gameId)
+    {
+        $game = Game::find($gameId);
+
+        if (!$game) {
+            return $this->error('Game not found', 404);
+        }
+
+        try {
+            $result = $this->gameService->claimGiftApis($game);
+
+            return $this->success($result, $result['awarded']
+                ? 'Gift apis awarded successfully'
+                : $result['reason']
+            );
+        } catch (GameException $e) {
+            return $this->error($e->getMessage(), $e->getHttpCode(), $e->getErrorCode());
+        }
+    }
 }

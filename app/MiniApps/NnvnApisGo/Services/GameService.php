@@ -143,6 +143,49 @@ class GameService
         });
     }
 
+    public function claimGiftApis(Game $game): array
+    {
+        if (!in_array($game->status, ['playing', 'completed'])) {
+            throw GameException::gameNotActive();
+        }
+
+        if ($game->gift_apis_found) {
+            return [
+                'awarded' => false,
+                'reason' => 'Gift already claimed for this game',
+            ];
+        }
+
+        return DB::transaction(function () use ($game) {
+            $globalGiftCount = Game::where('gift_apis_found', true)
+                ->where('status', 'completed')
+                ->lockForUpdate()
+                ->count();
+
+            if ($globalGiftCount >= Constants::MAX_GIFT_APIS_GLOBAL) {
+                return [
+                    'awarded' => false,
+                    'reason' => 'Global gift limit reached',
+                ];
+            }
+
+            $game->update([
+                'gift_apis_found' => true,
+                'apis_found' => $game->apis_found + 1,
+            ]);
+
+            $player = Player::findOrFail($game->player_id);
+            $player->gift_apis_found += 1;
+            $player->save();
+
+            return [
+                'awarded' => true,
+                'player_gift_apis' => $player->gift_apis_found,
+                'player_total_apis' => $player->round_apis_found + $player->gift_apis_found,
+            ];
+        });
+    }
+
     private function abandonActiveGames(int $playerId): ?int
     {
         $activeGame = Game::where('player_id', $playerId)

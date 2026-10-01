@@ -24,6 +24,7 @@ Route::get('players/me', [PlayerController::class, 'me']);
 Route::post('games/start', [GameController::class, 'start']);
 Route::post('games/{gameId}/rounds', [GameController::class, 'submitRound']);
 Route::post('games/{gameId}/complete', [GameController::class, 'complete']);
+Route::post('games/{gameId}/gift-apis', [GameController::class, 'claimGiftApis']);
 
 // Leaderboard
 Route::get('leaderboard', [LeaderboardController::class, 'index']);
