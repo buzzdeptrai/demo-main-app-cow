@@ -54,7 +54,7 @@ class BoxController extends Controller
 
         $game = Game::find($validated['game_id']);
 
-        if (!$game || $game->status !== 'playing') {
+        if (!$game || !in_array($game->status, ['playing', 'completed'])) {
             return $this->error('Game not found or not active', 404);
         }
 
