@@ -3,6 +3,7 @@
 namespace App\MiniApps\NnvnApisGo\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\MiniApps\NnvnApisGo\Constants;
 use App\MiniApps\NnvnApisGo\Models\BoxClick;
 use App\MiniApps\NnvnApisGo\Models\BoxConfig;
 use App\MiniApps\NnvnApisGo\Models\Game;
@@ -14,7 +15,7 @@ class BoxController extends Controller
 {
     use ApiResponse;
 
-    private const TOTAL_BOXES = 15;
+    private const TOTAL_BOXES = 16;
 
     public function config()
     {
@@ -22,7 +23,13 @@ class BoxController extends Controller
             ->orderBy('box_index')
             ->get();
 
-        $apisIndex = rand(0, self::TOTAL_BOXES - 1);
+        // Check if gift apis still available globally
+        $globalGiftCount = Game::where('gift_apis_found', true)
+            ->where('status', 'completed')
+            ->count();
+        $giftAvailable = $globalGiftCount < Constants::MAX_GIFT_APIS_GLOBAL;
+
+        $apisIndex = $giftAvailable ? rand(0, self::TOTAL_BOXES - 1) : null;
 
         $boxes = [];
         foreach ($activeConfigs as $config) {
@@ -36,6 +43,7 @@ class BoxController extends Controller
         return $this->success([
             'boxes' => $boxes,
             'apis_index' => $apisIndex,
+            'gift_available' => $giftAvailable,
             'total_boxes' => self::TOTAL_BOXES,
         ], 'Box configuration retrieved successfully');
     }

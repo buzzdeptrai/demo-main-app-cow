@@ -9,7 +9,7 @@ class NnvnBoxConfigSeeder extends Seeder
 {
     public function run(): void
     {
-        for ($i = 0; $i < 15; $i++) {
+        for ($i = 0; $i < 16; $i++) {
             $boxIndex = $i;
             $boxNumber = $i + 1;
 
@@ -23,7 +23,7 @@ class NnvnBoxConfigSeeder extends Seeder
             );
         }
 
-        // Deactivate old boxes (15+) if they exist
-        BoxConfig::where('box_index', '>=', 15)->update(['is_active' => false]);
+        // Deactivate old boxes (16+) if they exist
+        BoxConfig::where('box_index', '>=', 16)->update(['is_active' => false]);
     }
 }
