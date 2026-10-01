@@ -33,16 +33,17 @@ class BoxController extends Controller
 
         $boxes = [];
         foreach ($activeConfigs as $config) {
+            $isApis = $config->box_index === $apisIndex;
             $boxes[] = [
                 'index' => $config->box_index,
-                'url' => $config->url,
+                'url' => $isApis ? '' : $config->url,
+                'type' => $isApis ? 'apis' : 'link',
                 'label' => $config->label,
             ];
         }
 
         return $this->success([
             'boxes' => $boxes,
-            'apis_index' => $apisIndex,
             'gift_available' => $giftAvailable,
             'total_boxes' => self::TOTAL_BOXES,
         ], 'Box configuration retrieved successfully');
