@@ -15,8 +15,8 @@ class BoxClickRequest extends FormRequest
     {
         return [
             'game_id' => ['required', 'integer', 'exists:nnvn_games,id'],
-            'round_number' => ['required', 'integer', 'in:1,2'],
-            'box_index' => ['required', 'integer', 'between:0,15'],
+            'round_number' => ['required', 'integer', 'in:1'],
+            'box_index' => ['required', 'integer', 'between:0,14'],
         ];
     }
 }

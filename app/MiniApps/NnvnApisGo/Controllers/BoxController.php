@@ -14,7 +14,7 @@ class BoxController extends Controller
 {
     use ApiResponse;
 
-    private const TOTAL_BOXES = 16;
+    private const TOTAL_BOXES = 15;
 
     public function config()
     {
