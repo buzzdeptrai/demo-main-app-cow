@@ -4,7 +4,7 @@ namespace App\MiniApps\NnvnApisGo;
 
 class Constants
 {
-    const MAX_APIS = 0; // TEMP: block all players for FE testing (restore to 50)
+    const MAX_APIS = 2; // TEMP: for FE testing (restore to 50)
     const TOTAL_ROUNDS = 1;
     const APIS_PER_SESSION = 1;
     const MAX_GIFT_APIS_GLOBAL = 200;
