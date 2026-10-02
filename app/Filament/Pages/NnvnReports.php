@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\MiniApps\NnvnApisGo\Constants;
 use App\MiniApps\NnvnApisGo\Models\BoxClick;
 use App\MiniApps\NnvnApisGo\Models\Game;
 use App\MiniApps\NnvnApisGo\Models\Player;
@@ -65,11 +66,19 @@ class NnvnReports extends Page
 
     private function getSummary(): array
     {
+        $giftUsed = Game::where('gift_apis_found', true)
+            ->where('status', 'completed')
+            ->count();
+        $giftLimit = Constants::MAX_GIFT_APIS_GLOBAL;
+
         return [
             'total_apis' => Game::where('status', 'completed')->sum('apis_found'),
             'total_games' => Game::where('status', 'completed')->count(),
             'total_box_clicks' => BoxClick::count(),
             'apis_clicks' => BoxClick::where('is_apis', true)->count(),
+            'gift_used' => $giftUsed,
+            'gift_limit' => $giftLimit,
+            'gift_remaining' => $giftLimit - $giftUsed,
         ];
     }
 

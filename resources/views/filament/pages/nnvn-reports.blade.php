@@ -19,6 +19,29 @@
         </x-filament::card>
     </div>
 
+    {{-- Gift Apis Status --}}
+    <x-filament::card class="mb-6">
+        <h2 class="text-lg font-semibold mb-3">Gift Apis (Limit {{ $summary['gift_limit'] }})</h2>
+        <div class="flex items-center gap-6">
+            <div>
+                <span class="text-sm text-gray-500">Used:</span>
+                <span class="text-xl font-bold text-purple-600">{{ $summary['gift_used'] }}</span>
+            </div>
+            <div>
+                <span class="text-sm text-gray-500">Remaining:</span>
+                <span class="text-xl font-bold {{ $summary['gift_remaining'] > 0 ? 'text-green-600' : 'text-red-600' }}">{{ $summary['gift_remaining'] }}</span>
+            </div>
+            <div>
+                <span class="text-sm text-gray-500">Limit:</span>
+                <span class="text-xl font-bold">{{ $summary['gift_limit'] }}</span>
+            </div>
+        </div>
+        <div class="mt-3 w-full bg-gray-200 rounded-full h-3">
+            <div class="bg-purple-600 h-3 rounded-full" style="width: {{ min(100, ($summary['gift_used'] / $summary['gift_limit']) * 100) }}%"></div>
+        </div>
+        <div class="text-xs text-gray-400 mt-1">{{ round(($summary['gift_used'] / $summary['gift_limit']) * 100, 1) }}% used</div>
+    </x-filament::card>
+
     {{-- Leaderboard --}}
     <x-filament::card>
         <h2 class="text-lg font-semibold mb-4">Leaderboard (Top 50)</h2>
