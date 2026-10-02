@@ -87,7 +87,7 @@ class NnvnReports extends Page
         return Player::where('total_sessions', '>', 0)
             ->orderByRaw('(round_apis_found + gift_apis_found) DESC')
             ->orderBy('best_total_time', 'asc')
-            ->limit(50)
+            ->limit(20)
             ->get();
     }
 }

@@ -44,7 +44,7 @@
 
     {{-- Leaderboard --}}
     <x-filament::card>
-        <h2 class="text-lg font-semibold mb-4">Leaderboard (Top 50)</h2>
+        <h2 class="text-lg font-semibold mb-4">Leaderboard (Top 20)</h2>
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b">
