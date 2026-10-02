@@ -30,7 +30,7 @@ class QuizController extends Controller
         if ($gameId) {
             $recentIds = QuizAnswer::where('game_id', $gameId)
                 ->latest('id')
-                ->limit(3)
+                ->limit(7)
                 ->pluck('question_id')
                 ->toArray();
 
