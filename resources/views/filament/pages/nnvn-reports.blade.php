@@ -36,10 +36,11 @@
                 <span class="text-xl font-bold">{{ $summary['gift_limit'] }}</span>
             </div>
         </div>
-        <div class="mt-3 w-full bg-gray-200 rounded-full h-3">
-            <div class="bg-purple-600 h-3 rounded-full" style="width: {{ min(100, ($summary['gift_used'] / $summary['gift_limit']) * 100) }}%"></div>
+        @php $giftPercent = round(($summary['gift_used'] / max(1, $summary['gift_limit'])) * 100, 1); @endphp
+        <div class="mt-3" style="width:100%; height:12px; background:#e5e7eb; border-radius:9999px; overflow:hidden;">
+            <div style="width:{{ $giftPercent }}%; height:100%; background:#9333ea; border-radius:9999px;"></div>
         </div>
-        <div class="text-xs text-gray-400 mt-1">{{ round(($summary['gift_used'] / $summary['gift_limit']) * 100, 1) }}% used</div>
+        <div class="text-xs text-gray-400 mt-1">{{ $giftPercent }}% used</div>
     </x-filament::card>
 
     {{-- Leaderboard --}}
