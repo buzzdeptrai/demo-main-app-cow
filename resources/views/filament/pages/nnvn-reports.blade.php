@@ -62,7 +62,7 @@
                 <tr class="border-b {{ $index < 3 ? 'bg-yellow-50' : '' }}">
                     <td class="py-2 font-semibold">{{ $index + 1 }}</td>
                     <td class="py-2">{{ $player->name }}</td>
-                    <td class="py-2 text-right">{{ $player->round_apis_found }}/50</td>
+                    <td class="py-2 text-right">{{ $player->round_apis_found }}/{{ \App\MiniApps\NnvnApisGo\Constants::MAX_APIS }}</td>
                     <td class="py-2 text-right text-purple-600">{{ $player->gift_apis_found }}</td>
                     <td class="py-2 text-right font-bold">{{ $player->round_apis_found + $player->gift_apis_found }}</td>
                     <td class="py-2 text-right">{{ $player->best_total_time ? $player->best_total_time . 's' : '-' }}</td>
