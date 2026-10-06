@@ -54,10 +54,11 @@ class NnvnQuizQuestionResource extends Resource
                 Forms\Components\Select::make('correct_index')
                     ->label('Correct Answer Index')
                     ->options([
-                        0 => 'Option 0 (First)',
-                        1 => 'Option 1 (Second)',
-                        2 => 'Option 2 (Third)',
-                        3 => 'Option 3 (Fourth)',
+                        0 => 'A - Option 1',
+                        1 => 'B - Option 2',
+                        2 => 'C - Option 3',
+                        3 => 'D - Option 4',
+                        4 => 'E - Combo (multi-answer)',
                     ])
                     ->required(),
 
