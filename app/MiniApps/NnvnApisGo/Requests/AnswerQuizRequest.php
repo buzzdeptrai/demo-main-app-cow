@@ -15,7 +15,7 @@ class AnswerQuizRequest extends FormRequest
     {
         return [
             'question_id' => ['required', 'integer', 'exists:nnvn_quiz_questions,id'],
-            'answer_index' => ['required', 'integer', 'in:0,1,2'],
+            'answer_index' => ['required', 'integer', 'in:0,1,2,3,4'],
             'game_id' => ['required', 'integer', 'exists:nnvn_games,id'],
         ];
     }
