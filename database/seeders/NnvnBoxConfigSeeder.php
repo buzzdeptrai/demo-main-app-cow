@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\MiniApps\NnvnApisGo\Models\BoxClick;
 use App\MiniApps\NnvnApisGo\Models\BoxConfig;
 use Illuminate\Database\Seeder;
 
@@ -9,6 +10,8 @@ class NnvnBoxConfigSeeder extends Seeder
 {
     public function run(): void
     {
+        // Clear old box click data
+        BoxClick::query()->delete();
         $links = [
             ['url' => 'https://pro.novonordisk.vn', 'label' => 'Novo Nordisk Pro'],
             ['url' => 'https://giamcansongkhoe.vn', 'label' => 'Giảm Cân Sống Khỏe'],
