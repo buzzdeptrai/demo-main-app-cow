@@ -10,11 +10,11 @@ class NnvnBoxConfigSeeder extends Seeder
     public function run(): void
     {
         $links = [
-            ['url' => 'https://www.novonordisk.vn/', 'label' => 'Novo Nordisk VN'],
-            ['url' => 'https://www.novonordisk.com/about/the-novo-way.html', 'label' => 'The Novo Way'],
-            ['url' => 'https://www.novonordisk.com/science-and-technology/ozempic.html', 'label' => 'Ozempic'],
-            ['url' => 'https://www.novonordisk.com/science-and-technology/wegovy.html', 'label' => 'Wegovy'],
-            ['url' => 'https://www.novonordisk.com/science-and-technology/ryzodeg.html', 'label' => 'Ryzodeg'],
+            ['url' => 'https://pro.novonordisk.vn', 'label' => 'Novo Nordisk Pro'],
+            ['url' => 'https://giamcansongkhoe.vn', 'label' => 'Giảm Cân Sống Khỏe'],
+            ['url' => 'https://dieutrigiamcan.vn', 'label' => 'Điều Trị Giảm Cân'],
+            ['url' => 'https://www.facebook.com/p/Novo-Nordisk-Vietnam-100063775214961/', 'label' => 'Facebook Novo Nordisk VN'],
+            ['url' => 'https://zalo.me/s/81236361287844104/', 'label' => 'Zalo Novo Nordisk VN'],
         ];
 
         // Deactivate all old boxes
