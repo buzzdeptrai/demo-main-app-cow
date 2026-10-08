@@ -15,37 +15,67 @@ class BoxController extends Controller
 {
     use ApiResponse;
 
-    private const TOTAL_BOXES = 16;
-
     public function config()
     {
-        $activeConfigs = BoxConfig::where('is_active', true)
-            ->orderBy('box_index')
-            ->get();
-
-        // Check if gift apis still available globally
         $globalGiftCount = Game::where('gift_apis_found', true)
             ->where('status', 'completed')
             ->count();
         $giftAvailable = $globalGiftCount < Constants::MAX_GIFT_APIS_GLOBAL;
 
-        $apisIndex = $giftAvailable ? rand(0, self::TOTAL_BOXES - 1) : null;
+        $linkConfigs = BoxConfig::where('is_active', true)
+            ->orderBy('box_index')
+            ->limit(Constants::TOTAL_BOXES - Constants::BOX_APIS_COUNT - Constants::BOX_MESSAGE_COUNT)
+            ->get();
+
+        $indices = range(0, Constants::TOTAL_BOXES - 1);
+        shuffle($indices);
+
+        $apisIndices = $giftAvailable
+            ? array_slice($indices, 0, Constants::BOX_APIS_COUNT)
+            : [];
+        $messageIndices = array_slice($indices, Constants::BOX_APIS_COUNT, Constants::BOX_MESSAGE_COUNT);
+
+        $message = Constants::BOX_MESSAGES[array_rand(Constants::BOX_MESSAGES)];
+        $messageEn = Constants::BOX_MESSAGES_EN[array_rand(Constants::BOX_MESSAGES_EN)];
 
         $boxes = [];
-        foreach ($activeConfigs as $config) {
-            $isApis = $config->box_index === $apisIndex;
-            $boxes[] = [
-                'index' => $config->box_index,
-                'url' => $isApis ? '' : $config->url,
-                'type' => $isApis ? 'apis' : 'link',
-                'label' => $config->label,
-            ];
+        $linkIndex = 0;
+
+        for ($i = 0; $i < Constants::TOTAL_BOXES; $i++) {
+            if (in_array($i, $apisIndices)) {
+                $boxes[] = [
+                    'index' => $i,
+                    'type' => 'apis',
+                    'url' => '',
+                    'label' => '',
+                    'message' => null,
+                ];
+            } elseif (in_array($i, $messageIndices)) {
+                $boxes[] = [
+                    'index' => $i,
+                    'type' => 'message',
+                    'url' => '',
+                    'label' => '',
+                    'message' => $message,
+                    'message_en' => $messageEn,
+                ];
+            } else {
+                $config = $linkConfigs[$linkIndex] ?? null;
+                $linkIndex++;
+                $boxes[] = [
+                    'index' => $i,
+                    'type' => 'link',
+                    'url' => $config ? $config->url : '',
+                    'label' => $config ? $config->label : '',
+                    'message' => null,
+                ];
+            }
         }
 
         return $this->success([
             'boxes' => $boxes,
             'gift_available' => $giftAvailable,
-            'total_boxes' => self::TOTAL_BOXES,
+            'total_boxes' => Constants::TOTAL_BOXES,
         ], 'Box configuration retrieved successfully');
     }
 
@@ -60,26 +90,26 @@ class BoxController extends Controller
         }
 
         $boxIndex = (int) $validated['box_index'];
+        $boxType = $validated['box_type'] ?? 'link';
+        $isApis = $boxType === 'apis';
+
         $boxConfig = BoxConfig::where('box_index', $boxIndex)
             ->where('is_active', true)
             ->first();
 
-        $isApis = $boxConfig === null;
-        $urlOpened = $boxConfig ? $boxConfig->url : null;
-
-        $boxClick = BoxClick::create([
+        BoxClick::create([
             'game_id' => $game->id,
             'round_number' => $validated['round_number'],
             'box_index' => $boxIndex,
             'is_apis' => $isApis,
             'is_correct' => $isApis,
-            'url_opened' => $urlOpened,
+            'url_opened' => $boxConfig ? $boxConfig->url : null,
             'clicked_at' => Carbon::now(),
         ]);
 
         return $this->success([
             'is_apis' => $isApis,
-            'url' => $urlOpened,
-        ], $isApis ? 'You found the Apis!' : 'This box contains a link');
+            'type' => $boxType,
+        ], $isApis ? 'You found the Apis!' : 'Keep looking!');
     }
 }
