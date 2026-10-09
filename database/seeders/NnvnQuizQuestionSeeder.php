@@ -12,7 +12,14 @@ class NnvnQuizQuestionSeeder extends Seeder
         // Xóa hết câu hỏi cũ
         QuizQuestion::query()->delete();
 
-        $questions = [
+        foreach (self::questions() as $question) {
+            QuizQuestion::create(array_merge($question, ['is_active' => true]));
+        }
+    }
+
+    public static function questions(): array
+    {
+        return [
             // ========== THE NOVO WAY (Group 1: 1-15) ==========
 
             // Q1 - Multiple correct (A,B,C,D) → E combo
@@ -370,7 +377,7 @@ class NnvnQuizQuestionSeeder extends Seeder
             // Q19 - Single correct (D)
             [
                 'question_vi' => 'Thương hiệu Novo tiếp tục kế thừa và phát triển trên những nền tảng nào?',
-                'question_en' => 'On which foundations does the Novo brand continue to inherit and develop?',
+                'question_en' => 'What foundations does the Novo brand continue to build on and further develop?',
                 'options' => [
                     'Khoa học',
                     'Sự tận tâm',
@@ -446,7 +453,7 @@ class NnvnQuizQuestionSeeder extends Seeder
                     'Cả A, B và C đều đúng',
                 ],
                 'options_en' => [
-                    'Blood sugar control',
+                    'Glycemic control',
                     'Cardiovascular and renal protection',
                     'Supporting weight management',
                     'Cancer treatment',
@@ -540,7 +547,7 @@ class NnvnQuizQuestionSeeder extends Seeder
                     'A long-acting basal insulin',
                     'A component of Ryzodeg',
                     'GLP-1 RA',
-                    'Controls basal blood sugar',
+                    'Control of basal blood glucose',
                     'All of A, B, and D are correct',
                 ],
                 'correct_index' => 4,
@@ -572,7 +579,7 @@ class NnvnQuizQuestionSeeder extends Seeder
             // Q33 - Single correct (A)
             [
                 'question_vi' => 'Ngày Chuyển đổi số quốc gia của Việt Nam được tổ chức vào ngày nào hằng năm?',
-                'question_en' => 'On which date is Vietnam\'s National Digital Transformation Day held annually?',
+                'question_en' => 'When is Vietnam\'s National Digital Transformation Day observed each year?',
                 'options' => ['Ngày 10 tháng 10', 'Ngày 10 tháng 11', 'Ngày 22 tháng 4', 'Ngày 2 tháng 9'],
                 'options_en' => ['October 10', 'November 10', 'April 22', 'September 2'],
                 'correct_index' => 0,
@@ -600,7 +607,7 @@ class NnvnQuizQuestionSeeder extends Seeder
             // Q35 - Single correct (A)
             [
                 'question_vi' => 'Đâu là cách gọi tiếng Việt tương ứng của 4 nguyên tắc The Novo Way trong tài liệu nguồn?',
-                'question_en' => 'What are the corresponding Vietnamese names of the 4 principles of The Novo Way in the source document?',
+                'question_en' => 'What are the four principles of The Novo Way called in Vietnamese in the source document?',
                 'options' => [
                     'Tận tâm với khách hàng; Tinh thần cạnh tranh; Sự rõ ràng; Quan tâm & Chính trực',
                     'Khách hàng là trên hết; Chiến thắng; Minh bạch; Hợp tác',
@@ -608,7 +615,7 @@ class NnvnQuizQuestionSeeder extends Seeder
                     'Tập trung; Tốc độ; Hiệu suất; Tuân thủ',
                 ],
                 'options_en' => [
-                    'Customer Dedication; Competitive Spirit; Clarity; Care & Integrity',
+                    'Customer Obsession; Competitiveness; Clarity; Care & Integrity',
                     'Customer First; Winning; Transparency; Collaboration',
                     'Innovation; Impact; Patient-Centricity; Science',
                     'Focus; Speed; Performance; Compliance',
@@ -616,9 +623,5 @@ class NnvnQuizQuestionSeeder extends Seeder
                 'correct_index' => 0,
             ],
         ];
-
-        foreach ($questions as $question) {
-            QuizQuestion::create(array_merge($question, ['is_active' => true]));
-        }
     }
 }

@@ -211,11 +211,21 @@ MAX_ROUND_TIME = 30.0   // Giây
 
 ### Seeders
 ```bash
-php artisan db:seed --class=NnvnQuizQuestionSeeder   # 10 câu quiz bilingual
+php artisan db:seed --class=NnvnQuizQuestionSeeder   # 35 câu quiz bilingual (vi/en)
 php artisan db:seed --class=NnvnBoxConfigSeeder       # 15 box configs placeholder URLs
 php artisan db:seed --class=ClientRoleSeeder           # Role 'client'
 php artisan db:seed --class=ClientAccountSeeder        # client@nnvn.com / Client@nnvn2026
 ```
+
+### Quiz Translation Export/Import
+- Quiz data (35 câu) nằm trong static method `NnvnQuizQuestionSeeder::questions()` — dùng chung cho seeder + export.
+- **Export cho brand review bản dịch:**
+  ```bash
+  php scripts/export_quiz_translation.php   # → storage/app/nnvn_quiz_translation.csv (UTF-8 BOM)
+  php scripts/export_quiz_xlsx.php          # → storage/app/nnvn_quiz_translation.xlsx (highlight đáp án đúng)
+  ```
+  Format cột: STT | Câu hỏi VI | Question EN | A–E (VI/EN cạnh nhau) | Đáp án đúng (A–E).
+- **TODO — import ngược sau khi brand edit xong:** cần viết script `scripts/import_quiz_translation.php` đọc file .xlsx/.csv (cùng format cột khi export) để cập nhật lại `question_vi/en`, `options/options_en` vào DB `nnvn_quiz_questions` (match theo STT = thứ tự câu). Lưu ý giữ nguyên `correct_index` theo cột "Đáp án đúng".
 
 ### No Auth Required
 Email-based identification, CORS-friendly cho game frontend. Không cần Sanctum token.
