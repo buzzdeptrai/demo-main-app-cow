@@ -9,6 +9,13 @@ class NnvnQuizQuestionSeeder extends Seeder
 {
     public function run(): void
     {
+        // Guard: tránh chạy nhầm làm xóa analytics (quiz_answers cascade theo questions).
+        // Dùng FORCE_RESEED=1 nếu thực sự muốn ghi đè toàn bộ câu hỏi.
+        if (QuizQuestion::query()->exists() && !env('FORCE_RESEED')) {
+            $this->command->warn('Quiz questions đã tồn tại — bỏ qua để bảo vệ nnvn_quiz_answers. Dùng FORCE_RESEED=1 để ép ghi đè.');
+            return;
+        }
+
         // Xóa hết câu hỏi cũ
         QuizQuestion::query()->delete();
 

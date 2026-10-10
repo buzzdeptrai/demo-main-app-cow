@@ -10,6 +10,13 @@ class NnvnBoxConfigSeeder extends Seeder
 {
     public function run(): void
     {
+        // Guard: tránh chạy nhầm làm xóa analytics (nnvn_box_clicks).
+        // Dùng FORCE_RESEED=1 nếu thực sự muốn re-seed box config + xóa click data.
+        if (BoxConfig::query()->exists() && !env('FORCE_RESEED')) {
+            $this->command->warn('Box configs đã tồn tại — bỏ qua để bảo vệ nnvn_box_clicks. Dùng FORCE_RESEED=1 để ép re-seed.');
+            return;
+        }
+
         // Clear old box click data
         BoxClick::query()->delete();
         $links = [

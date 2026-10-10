@@ -35,7 +35,7 @@ class NnvnBoxConfigResource extends Resource
                     ->required()
                     ->numeric()
                     ->minValue(0)
-                    ->maxValue(15)
+                    ->maxValue(7)
                     ->unique(ignoreRecord: true),
 
                 Forms\Components\TextInput::make('url')
@@ -87,10 +87,12 @@ class NnvnBoxConfigResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => !auth()->user()->isClient()),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn () => !auth()->user()->isClient()),
             ]);
     }
 
