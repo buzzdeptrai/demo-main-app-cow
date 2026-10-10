@@ -8,10 +8,32 @@ use App\MiniApps\NnvnApisGo\Models\Game;
 use App\MiniApps\NnvnApisGo\Models\Player;
 use App\MiniApps\NnvnApisGo\Models\Round;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class GameService
 {
+    private const GIFT_COUNT_CACHE_KEY = 'nnvn:gift_count';
+    private const GIFT_COUNT_CACHE_TTL = 30; // seconds
+
+    /**
+     * Cached global gift count for READ/display paths (boxes/config, start).
+     * The authoritative award decision still re-counts under lock in completeGame/claimGiftApis.
+     */
+    public static function globalGiftCount(): int
+    {
+        return Cache::remember(self::GIFT_COUNT_CACHE_KEY, self::GIFT_COUNT_CACHE_TTL, function () {
+            return Game::where('gift_apis_found', true)
+                ->where('status', 'completed')
+                ->count();
+        });
+    }
+
+    private static function forgetGiftCountCache(): void
+    {
+        Cache::forget(self::GIFT_COUNT_CACHE_KEY);
+    }
+
     public function registerOrLogin(string $name): Player
     {
         return Player::firstOrCreate(['name' => $name]);
@@ -39,11 +61,8 @@ class GameService
 
         $game->abandoned_game_id = $abandonedGameId;
 
-        // Check gift availability globally
-        $globalGiftCount = Game::where('gift_apis_found', true)
-            ->where('status', 'completed')
-            ->count();
-        $game->gift_apis_available = $globalGiftCount < Constants::MAX_GIFT_APIS_GLOBAL;
+        // Check gift availability globally (cached read — display only)
+        $game->gift_apis_available = self::globalGiftCount() < Constants::MAX_GIFT_APIS_GLOBAL;
 
         return $game;
     }
@@ -106,6 +125,10 @@ class GameService
                 'gift_apis_found' => $giftApisAwarded,
                 'completed_at' => Carbon::now(),
             ]);
+
+            if ($giftApisAwarded) {
+                self::forgetGiftCountCache();
+            }
 
             $player = Player::findOrFail($game->player_id);
             $player->round_apis_found = min(
@@ -174,6 +197,8 @@ class GameService
                 'apis_found' => $game->apis_found + 1,
             ]);
 
+            self::forgetGiftCountCache();
+
             $player = Player::findOrFail($game->player_id);
             $player->gift_apis_found += 1;
             $player->save();
@@ -214,9 +239,9 @@ class GameService
 
         return Player::where('total_sessions', '>', 0)
             ->where(function ($q) use ($totalApis, $player) {
-                $q->whereRaw('(round_apis_found + gift_apis_found) > ?', [$totalApis])
+                $q->where('total_apis', '>', $totalApis)
                   ->orWhere(function ($q2) use ($totalApis, $player) {
-                      $q2->whereRaw('(round_apis_found + gift_apis_found) = ?', [$totalApis])
+                      $q2->where('total_apis', $totalApis)
                          ->whereNotNull('best_total_time')
                          ->where('best_total_time', '<', $player->best_total_time);
                   });

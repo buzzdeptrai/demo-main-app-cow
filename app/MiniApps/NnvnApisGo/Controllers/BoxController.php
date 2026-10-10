@@ -8,6 +8,7 @@ use App\MiniApps\NnvnApisGo\Models\BoxClick;
 use App\MiniApps\NnvnApisGo\Models\BoxConfig;
 use App\MiniApps\NnvnApisGo\Models\Game;
 use App\MiniApps\NnvnApisGo\Requests\BoxClickRequest;
+use App\MiniApps\NnvnApisGo\Services\GameService;
 use App\Traits\ApiResponse;
 use Carbon\Carbon;
 
@@ -17,10 +18,7 @@ class BoxController extends Controller
 
     public function config()
     {
-        $globalGiftCount = Game::where('gift_apis_found', true)
-            ->where('status', 'completed')
-            ->count();
-        $giftAvailable = $globalGiftCount < Constants::MAX_GIFT_APIS_GLOBAL;
+        $giftAvailable = GameService::globalGiftCount() < Constants::MAX_GIFT_APIS_GLOBAL;
 
         $linkConfigs = BoxConfig::where('is_active', true)
             ->orderBy('box_index')
