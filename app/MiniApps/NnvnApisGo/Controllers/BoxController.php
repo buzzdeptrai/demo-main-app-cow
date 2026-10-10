@@ -30,10 +30,16 @@ class BoxController extends Controller
         $indices = range(0, Constants::TOTAL_BOXES - 1);
         shuffle($indices);
 
+        // Số slot "đặc biệt" (không phải link) luôn cố định = apis + message,
+        // để số link luôn khớp với số link config đã fetch.
+        $specialCount = Constants::BOX_APIS_COUNT + Constants::BOX_MESSAGE_COUNT;
+
+        // Khi hết gift toàn cục: không còn ô apis, dồn toàn bộ slot đặc biệt thành message
+        // (tránh để lộ ô trống vì thiếu link config).
         $apisIndices = $giftAvailable
             ? array_slice($indices, 0, Constants::BOX_APIS_COUNT)
             : [];
-        $messageIndices = array_slice($indices, Constants::BOX_APIS_COUNT, Constants::BOX_MESSAGE_COUNT);
+        $messageIndices = array_slice($indices, count($apisIndices), $specialCount - count($apisIndices));
 
         $message = Constants::BOX_MESSAGES[array_rand(Constants::BOX_MESSAGES)];
         $messageEn = Constants::BOX_MESSAGES_EN[array_rand(Constants::BOX_MESSAGES_EN)];
