@@ -59,5 +59,11 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });
+
+        // Mini apps (public, email-based). Many concurrent players may share one
+        // office/NAT IP during live events, so the ceiling is intentionally high.
+        RateLimiter::for('miniapp', function (Request $request) {
+            return Limit::perMinute(6000)->by($request->ip());
+        });
     }
 }

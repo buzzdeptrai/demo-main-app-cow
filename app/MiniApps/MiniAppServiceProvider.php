@@ -57,7 +57,7 @@ class MiniAppServiceProvider extends ServiceProvider
             $slug = $this->folderNameToSlug($folderName);
 
             Route::prefix("api/v1/app/{$slug}")
-                ->middleware(['api'])
+                ->middleware(['throttle:miniapp', \Illuminate\Routing\Middleware\SubstituteBindings::class])
                 ->group($routesFile);
         }
     }
