@@ -83,19 +83,6 @@ class NnvnPlayerResource extends Resource
                     ->formatStateUsing(fn ($state) => $state ? "{$state}s" : '-')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('rank')
-                    ->label('Rank')
-                    ->getStateUsing(function (Player $record) {
-                        $totalApis = $record->round_apis_found + $record->gift_apis_found;
-                        return Player::whereRaw('(round_apis_found + gift_apis_found) > ?', [$totalApis])
-                            ->orWhere(function ($q) use ($record, $totalApis) {
-                                $q->whereRaw('(round_apis_found + gift_apis_found) = ?', [$totalApis])
-                                    ->whereNotNull('best_total_time')
-                                    ->where('best_total_time', '<', $record->best_total_time ?? PHP_INT_MAX);
-                            })
-                            ->count() + 1;
-                    }),
-
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),

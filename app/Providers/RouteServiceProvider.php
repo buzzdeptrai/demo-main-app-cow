@@ -63,7 +63,7 @@ class RouteServiceProvider extends ServiceProvider
         // Mini apps (public, email-based). Many concurrent players may share one
         // office/NAT IP during live events, so the ceiling is intentionally high.
         RateLimiter::for('miniapp', function (Request $request) {
-            return Limit::perMinute(6000)->by($request->ip());
+            return Limit::perMinute(10000)->by($request->ip());
         });
     }
 }
