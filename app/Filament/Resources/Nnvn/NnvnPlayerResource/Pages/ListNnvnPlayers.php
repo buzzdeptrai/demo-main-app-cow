@@ -13,4 +13,9 @@ class ListNnvnPlayers extends ListRecords
     {
         return [];
     }
+
+    protected function getTableRecordsPerPageSelectOptions(): array
+    {
+        return [10, 25, 50];
+    }
 }
