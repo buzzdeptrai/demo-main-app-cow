@@ -1,6 +1,6 @@
 <x-filament::page>
     {{-- Summary Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <x-filament::card>
             <div class="text-sm text-gray-500">Total Games</div>
             <div class="text-2xl font-bold">{{ $summary['total_games'] }}</div>
@@ -12,10 +12,6 @@
         <x-filament::card>
             <div class="text-sm text-gray-500">Total Box Clicks</div>
             <div class="text-2xl font-bold">{{ $summary['total_box_clicks'] }}</div>
-        </x-filament::card>
-        <x-filament::card>
-            <div class="text-sm text-gray-500">Apis Found Clicks</div>
-            <div class="text-2xl font-bold">{{ $summary['apis_clicks'] }}</div>
         </x-filament::card>
         <x-filament::card>
             <div class="text-sm text-gray-500">Message Clicks</div>
@@ -86,7 +82,7 @@
             <h2 class="text-lg font-semibold">Box Click Report (Links)</h2>
             <div class="text-sm">
                 <span class="text-gray-500">Apis Found:</span>
-                <span class="font-bold text-purple-600 mr-4">{{ $summary['apis_clicks'] }}</span>
+                <span class="font-bold text-purple-600 mr-4">{{ $summary['total_apis'] }}</span>
                 <span class="text-gray-500">Total Messages:</span>
                 <span class="font-bold text-blue-600">{{ $summary['message_clicks'] }}</span>
             </div>

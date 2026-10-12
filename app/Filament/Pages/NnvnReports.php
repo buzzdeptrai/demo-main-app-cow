@@ -122,7 +122,6 @@ class NnvnReports extends Page
             'total_apis' => Game::where('status', 'completed')->sum('apis_found'),
             'total_games' => Game::where('status', 'completed')->count(),
             'total_box_clicks' => BoxClick::count(),
-            'apis_clicks' => BoxClick::where('is_apis', true)->count(),
             'message_clicks' => BoxClick::where('box_type', 'message')->count(),
             'gift_used' => $giftUsed,
             'gift_limit' => $giftLimit,
