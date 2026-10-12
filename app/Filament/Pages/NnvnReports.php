@@ -62,35 +62,9 @@ class NnvnReports extends Page
             ->orderByDesc('clicks')
             ->get();
 
-        $byBox = DB::table('nnvn_box_clicks')
-            ->select(
-                'box_index',
-                DB::raw('COUNT(*) as clicks'),
-                DB::raw('MAX(clicked_at) as last_click')
-            )
-            ->where('box_type', 'message')
-            ->groupBy('box_index')
-            ->orderByDesc('clicks')
-            ->get();
-
-        $byDay = DB::table('nnvn_box_clicks')
-            ->select(
-                DB::raw('DATE(clicked_at) as day'),
-                DB::raw('COUNT(*) as clicks')
-            )
-            ->where('box_type', 'message')
-            ->groupBy(DB::raw('DATE(clicked_at)'))
-            ->orderByDesc('day')
-            ->limit(30)
-            ->get();
-
         return [
             'by_message' => $byMessage,
-            'by_box' => $byBox,
-            'by_day' => $byDay,
             'total' => BoxClick::where('box_type', 'message')->count(),
-            'messages_vi' => Constants::BOX_MESSAGES,
-            'messages_en' => Constants::BOX_MESSAGES_EN,
         ];
     }
 

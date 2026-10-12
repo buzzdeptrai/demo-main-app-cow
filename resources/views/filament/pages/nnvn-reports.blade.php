@@ -81,8 +81,8 @@
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold">Box Click Report (Links)</h2>
             <div class="text-sm">
-                <span class="text-gray-500">Apis Found:</span>
-                <span class="font-bold text-purple-600 mr-4">{{ $summary['total_apis'] }}</span>
+                <span class="text-gray-500">Apis Found (Gift):</span>
+                <span class="font-bold text-purple-600 mr-4">{{ $summary['gift_used'] }}</span>
                 <span class="text-gray-500">Total Messages:</span>
                 <span class="font-bold text-blue-600">{{ $summary['message_clicks'] }}</span>
             </div>
@@ -117,7 +117,7 @@
         </div>
 
         {{-- Clicks per message content --}}
-        <div class="mb-6">
+        <div>
             <h3 class="text-sm font-semibold text-gray-600 mb-2">By Message Content</h3>
             <table class="w-full text-sm">
                 <thead>
@@ -137,79 +137,6 @@
                     @empty
                     <tr><td colspan="3" class="py-4 text-center text-gray-400">No data yet</td></tr>
                     @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Clicks per box --}}
-            <div>
-                <h3 class="text-sm font-semibold text-gray-600 mb-2">By Box</h3>
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b">
-                            <th class="text-left py-2">Box</th>
-                            <th class="text-right py-2">Clicks</th>
-                            <th class="text-right py-2">Last Click</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($messageReport['by_box'] as $row)
-                        <tr class="border-b">
-                            <td class="py-2">Box {{ $row->box_index }}</td>
-                            <td class="py-2 text-right font-semibold text-blue-600">{{ $row->clicks }}</td>
-                            <td class="py-2 text-right text-gray-500">{{ $row->last_click }}</td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="3" class="py-4 text-center text-gray-400">No data yet</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            {{-- Clicks per day --}}
-            <div>
-                <h3 class="text-sm font-semibold text-gray-600 mb-2">By Day (last 30)</h3>
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b">
-                            <th class="text-left py-2">Day</th>
-                            <th class="text-right py-2">Clicks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($messageReport['by_day'] as $row)
-                        <tr class="border-b">
-                            <td class="py-2">{{ $row->day }}</td>
-                            <td class="py-2 text-right font-semibold text-blue-600">{{ $row->clicks }}</td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="2" class="py-4 text-center text-gray-400">No data yet</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        {{-- Configured messages (reference) --}}
-        <div class="mt-5">
-            <h3 class="text-sm font-semibold text-gray-600 mb-2">Configured Messages (random shown to player)</h3>
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b">
-                        <th class="text-left py-2 w-10">#</th>
-                        <th class="text-left py-2">VI</th>
-                        <th class="text-left py-2">EN</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($messageReport['messages_vi'] as $i => $msg)
-                    <tr class="border-b">
-                        <td class="py-2">{{ $i + 1 }}</td>
-                        <td class="py-2">{{ $msg }}</td>
-                        <td class="py-2 text-gray-500">{{ $messageReport['messages_en'][$i] ?? '' }}</td>
-                    </tr>
-                    @endforeach
                 </tbody>
             </table>
             <p class="text-xs text-gray-400 mt-2">Note: message content is tracked per click when the frontend sends it. Older clicks (before tracking) show as "(not tracked)".</p>
