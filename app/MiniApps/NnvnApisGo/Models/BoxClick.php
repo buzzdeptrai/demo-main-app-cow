@@ -13,6 +13,7 @@ class BoxClick extends Model
         'game_id',
         'round_number',
         'box_index',
+        'box_type',
         'is_apis',
         'is_correct',
         'url_opened',

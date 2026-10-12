@@ -105,6 +105,7 @@ class BoxController extends Controller
             'game_id' => $game->id,
             'round_number' => $validated['round_number'],
             'box_index' => $boxIndex,
+            'box_type' => $boxType,
             'is_apis' => $isApis,
             'is_correct' => $isApis,
             'url_opened' => $boxConfig ? $boxConfig->url : null,

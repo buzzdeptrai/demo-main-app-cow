@@ -26,11 +26,12 @@ class NnvnReports extends Page
     protected function getViewData(): array
     {
         $boxClicks = $this->getBoxClickReport();
+        $messageReport = $this->getMessageReport();
         $quizStats = $this->getQuizReport();
         $summary = $this->getSummary();
         $leaderboard = $this->getLeaderboard();
 
-        return compact('boxClicks', 'quizStats', 'summary', 'leaderboard');
+        return compact('boxClicks', 'messageReport', 'quizStats', 'summary', 'leaderboard');
     }
 
     private function getBoxClickReport()
@@ -40,11 +41,47 @@ class NnvnReports extends Page
                 'box_index',
                 DB::raw('MAX(url_opened) as url'),
                 DB::raw('COUNT(*) as total_clicks'),
+                DB::raw("SUM(CASE WHEN box_type = 'link' THEN 1 ELSE 0 END) as link_clicks"),
+                DB::raw("SUM(CASE WHEN box_type = 'message' THEN 1 ELSE 0 END) as message_clicks"),
+                DB::raw("SUM(CASE WHEN box_type = 'apis' THEN 1 ELSE 0 END) as apis_clicks"),
                 DB::raw('SUM(CASE WHEN is_apis = 1 THEN 1 ELSE 0 END) as apis_found')
             )
             ->groupBy('box_index')
             ->orderByDesc('total_clicks')
             ->get();
+    }
+
+    private function getMessageReport(): array
+    {
+        $byBox = DB::table('nnvn_box_clicks')
+            ->select(
+                'box_index',
+                DB::raw('COUNT(*) as clicks'),
+                DB::raw('MAX(clicked_at) as last_click')
+            )
+            ->where('box_type', 'message')
+            ->groupBy('box_index')
+            ->orderByDesc('clicks')
+            ->get();
+
+        $byDay = DB::table('nnvn_box_clicks')
+            ->select(
+                DB::raw('DATE(clicked_at) as day'),
+                DB::raw('COUNT(*) as clicks')
+            )
+            ->where('box_type', 'message')
+            ->groupBy(DB::raw('DATE(clicked_at)'))
+            ->orderByDesc('day')
+            ->limit(30)
+            ->get();
+
+        return [
+            'by_box' => $byBox,
+            'by_day' => $byDay,
+            'total' => BoxClick::where('box_type', 'message')->count(),
+            'messages_vi' => Constants::BOX_MESSAGES,
+            'messages_en' => Constants::BOX_MESSAGES_EN,
+        ];
     }
 
     private function getQuizReport()
@@ -76,6 +113,7 @@ class NnvnReports extends Page
             'total_games' => Game::where('status', 'completed')->count(),
             'total_box_clicks' => BoxClick::count(),
             'apis_clicks' => BoxClick::where('is_apis', true)->count(),
+            'message_clicks' => BoxClick::where('box_type', 'message')->count(),
             'gift_used' => $giftUsed,
             'gift_limit' => $giftLimit,
             'gift_remaining' => $giftLimit - $giftUsed,
