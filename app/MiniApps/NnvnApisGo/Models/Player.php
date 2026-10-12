@@ -36,15 +36,15 @@ class Player extends Model
      */
     public function canPlay(): bool
     {
-        return $this->round_apis_found < Constants::MAX_APIS;
+        return ($this->round_apis_found + $this->gift_apis_found) < Constants::MAX_APIS;
     }
 
     /**
-     * Get the number of round APIs remaining to be found.
+     * Get the number of APIs remaining (total cap minus round + gift).
      */
     public function remainingRoundApis(): int
     {
-        return max(0, Constants::MAX_APIS - $this->round_apis_found);
+        return max(0, Constants::MAX_APIS - ($this->round_apis_found + $this->gift_apis_found));
     }
 
     /**

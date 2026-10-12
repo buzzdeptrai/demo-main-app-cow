@@ -18,8 +18,8 @@ class PlayerResource extends JsonResource
             'round_apis_found' => $roundApis,
             'gift_apis_found' => $giftApis,
             'total_apis' => $roundApis + $giftApis,
-            'remaining_round_apis' => max(0, Constants::MAX_APIS - $roundApis),
-            'can_play' => $roundApis < Constants::MAX_APIS,
+            'remaining_round_apis' => max(0, Constants::MAX_APIS - ($roundApis + $giftApis)),
+            'can_play' => ($roundApis + $giftApis) < Constants::MAX_APIS,
             'total_sessions' => $this->total_sessions ?? 0,
             'best_total_time' => $this->best_total_time,
         ];

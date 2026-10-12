@@ -48,7 +48,7 @@ class GameService
     {
         $player = Player::findOrFail($playerId);
 
-        if ($player->round_apis_found >= Constants::MAX_APIS) {
+        if (($player->round_apis_found + $player->gift_apis_found) >= Constants::MAX_APIS) {
             throw GameException::maxApisReached();
         }
 
@@ -131,10 +131,9 @@ class GameService
             }
 
             $player = Player::findOrFail($game->player_id);
-            $player->round_apis_found = min(
-                $player->round_apis_found + $apisFound,
-                Constants::MAX_APIS
-            );
+            // Cap total (round + gift) at MAX_APIS
+            $remainingTotal = max(0, Constants::MAX_APIS - ($player->round_apis_found + $player->gift_apis_found));
+            $player->round_apis_found += min($apisFound, $remainingTotal);
             if ($giftApisAwarded) {
                 $player->gift_apis_found += 1;
             }
@@ -159,7 +158,7 @@ class GameService
                 'gift_apis_found' => $giftApisAwarded,
                 'player_round_apis' => $player->round_apis_found,
                 'player_gift_apis' => $player->gift_apis_found,
-                'player_remaining_round_apis' => max(0, Constants::MAX_APIS - $player->round_apis_found),
+                'player_remaining_round_apis' => max(0, Constants::MAX_APIS - ($player->round_apis_found + $player->gift_apis_found)),
                 'is_best_time' => $isBestTime,
                 'leaderboard_rank' => $rank,
             ];

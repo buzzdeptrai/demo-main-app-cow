@@ -4,11 +4,11 @@ namespace App\MiniApps\NnvnApisGo;
 
 class Constants
 {
-    const MAX_APIS = 80; // Max for round_apis only
+    const MAX_APIS = 90; // Total cap: round_apis_found + gift_apis_found
     const TOTAL_ROUNDS = 1;
     const APIS_PER_SESSION = 1;
     const MAX_GIFT_APIS_GLOBAL = 200;
-    const MAX_SESSIONS = 80; // 80 apis / 1 per game
+    const MAX_SESSIONS = 90; // 90 total apis / 1 per game
     const TIMER_SECONDS = 30;
     const MIN_ROUND_TIME = 2.0;
     const MAX_ROUND_TIME = 30.0;
