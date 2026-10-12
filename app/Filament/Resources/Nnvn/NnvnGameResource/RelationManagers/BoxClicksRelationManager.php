@@ -37,9 +37,9 @@ class BoxClicksRelationManager extends RelationManager
 
                 Tables\Columns\TextColumn::make('url_opened')
                     ->label('Link Opened')
-                    ->url(fn ($state) => $state ?: null, true)
+                    ->url(fn ($record) => $record->url_opened ?: null, true)
                     ->limit(40)
-                    ->tooltip(fn ($state) => $state)
+                    ->tooltip(fn ($record) => $record->url_opened)
                     ->placeholder('-'),
 
                 Tables\Columns\TextColumn::make('clicked_at')

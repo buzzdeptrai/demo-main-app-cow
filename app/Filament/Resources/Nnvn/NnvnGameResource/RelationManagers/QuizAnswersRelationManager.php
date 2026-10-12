@@ -27,7 +27,7 @@ class QuizAnswersRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('question.question_vi')
                     ->label('Question')
                     ->limit(60)
-                    ->tooltip(fn ($state) => $state)
+                    ->tooltip(fn ($record) => optional($record->question)->question_vi)
                     ->wrap(),
 
                 Tables\Columns\TextColumn::make('answer_index')
