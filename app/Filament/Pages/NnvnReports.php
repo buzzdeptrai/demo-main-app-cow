@@ -53,6 +53,17 @@ class NnvnReports extends Page
 
     private function getMessageReport(): array
     {
+        $byMessage = DB::table('nnvn_box_clicks')
+            ->select(
+                'message_text',
+                DB::raw('COUNT(*) as clicks'),
+                DB::raw('MAX(clicked_at) as last_click')
+            )
+            ->where('box_type', 'message')
+            ->groupBy('message_text')
+            ->orderByDesc('clicks')
+            ->get();
+
         $byBox = DB::table('nnvn_box_clicks')
             ->select(
                 'box_index',
@@ -76,6 +87,7 @@ class NnvnReports extends Page
             ->get();
 
         return [
+            'by_message' => $byMessage,
             'by_box' => $byBox,
             'by_day' => $byDay,
             'total' => BoxClick::where('box_type', 'message')->count(),

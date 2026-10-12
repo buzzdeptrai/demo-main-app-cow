@@ -120,6 +120,31 @@
             <span class="text-sm text-gray-500">Total message clicks: <span class="font-bold text-blue-600">{{ $messageReport['total'] }}</span></span>
         </div>
 
+        {{-- Clicks per message content --}}
+        <div class="mb-6">
+            <h3 class="text-sm font-semibold text-gray-600 mb-2">By Message Content</h3>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2">Message</th>
+                        <th class="text-right py-2">Clicks</th>
+                        <th class="text-right py-2">Last Click</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($messageReport['by_message'] as $row)
+                    <tr class="border-b">
+                        <td class="py-2">{{ $row->message_text ?? '(not tracked)' }}</td>
+                        <td class="py-2 text-right font-semibold text-blue-600">{{ $row->clicks }}</td>
+                        <td class="py-2 text-right text-gray-500">{{ $row->last_click }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="3" class="py-4 text-center text-gray-400">No data yet</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Clicks per box --}}
             <div>
@@ -191,7 +216,7 @@
                     @endforeach
                 </tbody>
             </table>
-            <p class="text-xs text-gray-400 mt-2">Note: message content is not stored per click (randomly picked at box config time), so only click counts are tracked.</p>
+            <p class="text-xs text-gray-400 mt-2">Note: message content is tracked per click when the frontend sends it. Older clicks (before tracking) show as "(not tracked)".</p>
         </div>
     </x-filament::card>
 

@@ -18,6 +18,8 @@ class BoxClickRequest extends FormRequest
             'round_number' => ['required', 'integer', 'in:1'],
             'box_index' => ['required', 'integer', 'between:0,7'],
             'box_type' => ['sometimes', 'string', 'in:link,apis,message'],
+            'url' => ['sometimes', 'nullable', 'string', 'max:500'],
+            'message' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }
 }

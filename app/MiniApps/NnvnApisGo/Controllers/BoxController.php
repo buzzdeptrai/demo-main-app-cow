@@ -97,10 +97,6 @@ class BoxController extends Controller
         $boxType = $validated['box_type'] ?? 'link';
         $isApis = $boxType === 'apis';
 
-        $boxConfig = BoxConfig::where('box_index', $boxIndex)
-            ->where('is_active', true)
-            ->first();
-
         BoxClick::create([
             'game_id' => $game->id,
             'round_number' => $validated['round_number'],
@@ -108,7 +104,8 @@ class BoxController extends Controller
             'box_type' => $boxType,
             'is_apis' => $isApis,
             'is_correct' => $isApis,
-            'url_opened' => $boxConfig ? $boxConfig->url : null,
+            'url_opened' => $boxType === 'link' ? ($validated['url'] ?? null) : null,
+            'message_text' => $boxType === 'message' ? ($validated['message'] ?? null) : null,
             'clicked_at' => Carbon::now(),
         ]);
 

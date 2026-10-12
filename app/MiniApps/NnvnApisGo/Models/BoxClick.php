@@ -17,6 +17,7 @@ class BoxClick extends Model
         'is_apis',
         'is_correct',
         'url_opened',
+        'message_text',
         'clicked_at',
     ];
 
