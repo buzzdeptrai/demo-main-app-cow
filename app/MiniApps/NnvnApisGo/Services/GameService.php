@@ -105,9 +105,18 @@ class GameService
             $quizCount = $rounds->where('quiz_used', true)->count();
             $apisFound = Constants::APIS_PER_SESSION;
 
-            // Gift apis logic: only award if globally available (with lock to prevent race condition)
+            $player = Player::findOrFail($game->player_id);
+
+            // Cap total (round + gift) at MAX_APIS. Round apis take priority,
+            // then gift apis fill whatever room is left under the total cap.
+            $remainingTotal = max(0, Constants::MAX_APIS - ($player->round_apis_found + $player->gift_apis_found));
+            $roundApisAwarded = min($apisFound, $remainingTotal);
+            $remainingTotal -= $roundApisAwarded;
+
+            // Gift apis: award only if the player still has room AND it is
+            // globally available (lock to prevent race condition on the global cap).
             $giftApisAwarded = false;
-            if ($giftApisFound) {
+            if ($giftApisFound && $remainingTotal > 0) {
                 $globalGiftCount = Game::where('gift_apis_found', true)
                     ->where('status', 'completed')
                     ->lockForUpdate()
@@ -121,7 +130,7 @@ class GameService
                 'status' => 'completed',
                 'total_time' => $totalTime,
                 'quiz_count' => $quizCount,
-                'apis_found' => $apisFound + ($giftApisAwarded ? 1 : 0),
+                'apis_found' => $roundApisAwarded + ($giftApisAwarded ? 1 : 0),
                 'gift_apis_found' => $giftApisAwarded,
                 'completed_at' => Carbon::now(),
             ]);
@@ -130,10 +139,7 @@ class GameService
                 self::forgetGiftCountCache();
             }
 
-            $player = Player::findOrFail($game->player_id);
-            // Cap total (round + gift) at MAX_APIS
-            $remainingTotal = max(0, Constants::MAX_APIS - ($player->round_apis_found + $player->gift_apis_found));
-            $player->round_apis_found += min($apisFound, $remainingTotal);
+            $player->round_apis_found += $roundApisAwarded;
             if ($giftApisAwarded) {
                 $player->gift_apis_found += 1;
             }
@@ -154,7 +160,7 @@ class GameService
                 'game_id' => $game->id,
                 'total_time' => round($totalTime, 1),
                 'quiz_count' => $quizCount,
-                'round_apis_found' => $apisFound,
+                'round_apis_found' => $roundApisAwarded,
                 'gift_apis_found' => $giftApisAwarded,
                 'player_round_apis' => $player->round_apis_found,
                 'player_gift_apis' => $player->gift_apis_found,
