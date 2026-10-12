@@ -36,17 +36,15 @@ class NnvnReports extends Page
 
     private function getBoxClickReport()
     {
-        return DB::table('nnvn_box_clicks')
+        return DB::table('nnvn_box_clicks as c')
+            ->leftJoin('nnvn_box_configs as b', 'c.url_opened', '=', 'b.url')
             ->select(
-                'box_index',
-                DB::raw('MAX(url_opened) as url'),
-                DB::raw('COUNT(*) as total_clicks'),
-                DB::raw("SUM(CASE WHEN box_type = 'link' THEN 1 ELSE 0 END) as link_clicks"),
-                DB::raw("SUM(CASE WHEN box_type = 'message' THEN 1 ELSE 0 END) as message_clicks"),
-                DB::raw("SUM(CASE WHEN box_type = 'apis' THEN 1 ELSE 0 END) as apis_clicks"),
-                DB::raw('SUM(CASE WHEN is_apis = 1 THEN 1 ELSE 0 END) as apis_found')
+                'c.url_opened as url',
+                DB::raw('MAX(b.label) as label'),
+                DB::raw('COUNT(*) as total_clicks')
             )
-            ->groupBy('box_index')
+            ->where('c.box_type', 'link')
+            ->groupBy('c.url_opened')
             ->orderByDesc('total_clicks')
             ->get();
     }

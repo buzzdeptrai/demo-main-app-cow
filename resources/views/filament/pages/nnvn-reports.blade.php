@@ -82,32 +82,32 @@
 
     {{-- Box Click Report --}}
     <x-filament::card>
-        <h2 class="text-lg font-semibold mb-4">Box Click Report</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold">Box Click Report (Links)</h2>
+            <div class="text-sm">
+                <span class="text-gray-500">Apis Found:</span>
+                <span class="font-bold text-purple-600 mr-4">{{ $summary['apis_clicks'] }}</span>
+                <span class="text-gray-500">Total Messages:</span>
+                <span class="font-bold text-blue-600">{{ $summary['message_clicks'] }}</span>
+            </div>
+        </div>
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b">
-                    <th class="text-left py-2">Box</th>
+                    <th class="text-left py-2">Link</th>
                     <th class="text-left py-2">URL</th>
                     <th class="text-right py-2">Clicks</th>
-                    <th class="text-right py-2">Link</th>
-                    <th class="text-right py-2">Message</th>
-                    <th class="text-right py-2">Apis</th>
-                    <th class="text-right py-2">Apis Found</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($boxClicks as $box)
                 <tr class="border-b">
-                    <td class="py-2">Box {{ $box->box_index }}</td>
+                    <td class="py-2">{{ $box->label ?? '(unknown link)' }}</td>
                     <td class="py-2 text-gray-500 truncate max-w-xs">{{ $box->url ?: '-' }}</td>
                     <td class="py-2 text-right font-semibold">{{ $box->total_clicks }}</td>
-                    <td class="py-2 text-right">{{ $box->link_clicks }}</td>
-                    <td class="py-2 text-right text-blue-600">{{ $box->message_clicks }}</td>
-                    <td class="py-2 text-right text-purple-600">{{ $box->apis_clicks }}</td>
-                    <td class="py-2 text-right">{{ $box->apis_found }}</td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="py-4 text-center text-gray-400">No data yet</td></tr>
+                <tr><td colspan="3" class="py-4 text-center text-gray-400">No data yet</td></tr>
                 @endforelse
             </tbody>
         </table>
