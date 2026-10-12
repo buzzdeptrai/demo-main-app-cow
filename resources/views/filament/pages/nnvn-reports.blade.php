@@ -99,7 +99,7 @@
                 @forelse($boxClicks as $box)
                 <tr class="border-b">
                     <td class="py-2">Box {{ $box->box_index }}</td>
-                    <td class="py-2 text-gray-500 truncate max-w-xs">{{ $box->url ?? 'Apis Box' }}</td>
+                    <td class="py-2 text-gray-500 truncate max-w-xs">{{ $box->url ?: '-' }}</td>
                     <td class="py-2 text-right font-semibold">{{ $box->total_clicks }}</td>
                     <td class="py-2 text-right">{{ $box->link_clicks }}</td>
                     <td class="py-2 text-right text-blue-600">{{ $box->message_clicks }}</td>

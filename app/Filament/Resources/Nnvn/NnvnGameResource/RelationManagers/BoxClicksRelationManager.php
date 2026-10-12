@@ -32,6 +32,14 @@ class BoxClicksRelationManager extends RelationManager
                     ->label('Box')
                     ->sortable(),
 
+                Tables\Columns\BadgeColumn::make('box_type')
+                    ->label('Type')
+                    ->colors([
+                        'primary' => 'link',
+                        'success' => 'apis',
+                        'warning' => 'message',
+                    ]),
+
                 Tables\Columns\BooleanColumn::make('is_apis')
                     ->label('Apis/Gift'),
 
@@ -40,6 +48,12 @@ class BoxClicksRelationManager extends RelationManager
                     ->url(fn ($record) => $record->url_opened ?: null, true)
                     ->limit(40)
                     ->tooltip(fn ($record) => $record->url_opened)
+                    ->placeholder('-'),
+
+                Tables\Columns\TextColumn::make('message_text')
+                    ->label('Message')
+                    ->limit(40)
+                    ->tooltip(fn ($record) => $record->message_text)
                     ->placeholder('-'),
 
                 Tables\Columns\TextColumn::make('clicked_at')

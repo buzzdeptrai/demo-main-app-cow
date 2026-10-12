@@ -153,7 +153,6 @@ class NnvnGameResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\RoundsRelationManager::class,
             RelationManagers\BoxClicksRelationManager::class,
             RelationManagers\QuizAnswersRelationManager::class,
         ];
