@@ -46,6 +46,11 @@ class Game extends Model
         return $this->hasMany(BoxClick::class, 'game_id');
     }
 
+    public function quizAnswers(): HasMany
+    {
+        return $this->hasMany(QuizAnswer::class, 'game_id');
+    }
+
     public function scopePlaying(Builder $query): Builder
     {
         return $query->where('status', 'playing');

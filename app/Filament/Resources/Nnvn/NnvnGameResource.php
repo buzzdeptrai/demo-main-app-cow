@@ -33,7 +33,48 @@ class NnvnGameResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form->schema([]);
+        return $form->schema([
+            \Filament\Forms\Components\Card::make()
+                ->columns(3)
+                ->schema([
+                    \Filament\Forms\Components\Placeholder::make('player_name')
+                        ->label('Player')
+                        ->content(fn ($record) => optional($record->player)->name ?? '-'),
+
+                    \Filament\Forms\Components\Placeholder::make('status')
+                        ->label('Status')
+                        ->content(fn ($record) => ucfirst($record->status)),
+
+                    \Filament\Forms\Components\Placeholder::make('total_time')
+                        ->label('Total Time')
+                        ->content(fn ($record) => $record->total_time ? "{$record->total_time}s" : '-'),
+
+                    \Filament\Forms\Components\Placeholder::make('apis_found')
+                        ->label('APIs Found')
+                        ->content(fn ($record) => $record->apis_found),
+
+                    \Filament\Forms\Components\Placeholder::make('gift_apis_found')
+                        ->label('Gift Awarded')
+                        ->content(fn ($record) => $record->gift_apis_found ? 'Yes' : 'No'),
+
+                    \Filament\Forms\Components\Placeholder::make('quiz_count')
+                        ->label('Quizzes Used')
+                        ->content(fn ($record) => $record->quiz_count),
+
+                    \Filament\Forms\Components\Placeholder::make('total_clicks')
+                        ->label('Total Box Clicks')
+                        ->content(fn ($record) => $record->boxClicks()->count()),
+
+                    \Filament\Forms\Components\Placeholder::make('apis_clicks')
+                        ->label('Apis/Gift Hits')
+                        ->content(fn ($record) => $record->boxClicks()->where('is_apis', true)->count()),
+
+                    \Filament\Forms\Components\Placeholder::make('quiz_correct')
+                        ->label('Quiz Correct')
+                        ->content(fn ($record) => $record->quizAnswers()->where('is_correct', true)->count()
+                            . ' / ' . $record->quizAnswers()->count()),
+                ]),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -113,6 +154,8 @@ class NnvnGameResource extends Resource
     {
         return [
             RelationManagers\RoundsRelationManager::class,
+            RelationManagers\BoxClicksRelationManager::class,
+            RelationManagers\QuizAnswersRelationManager::class,
         ];
     }
 
