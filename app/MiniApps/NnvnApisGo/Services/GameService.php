@@ -144,6 +144,7 @@ class GameService
                 $player->gift_apis_found += 1;
             }
             $player->total_sessions += 1;
+            $player->total_play_time += $totalTime;
 
             if ($player->best_total_time === null || $totalTime < $player->best_total_time) {
                 $player->best_total_time = $totalTime;

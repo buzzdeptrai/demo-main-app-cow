@@ -16,7 +16,7 @@ class LeaderboardService
 
             $players = Player::where('total_sessions', '>', 0)
                 ->orderBy('total_apis', 'desc')
-                ->orderBy('best_total_time', 'asc')
+                ->orderBy('total_play_time', 'asc')
                 ->limit($limit)
                 ->get();
 
@@ -28,6 +28,7 @@ class LeaderboardService
                     'gift_apis' => $player->gift_apis_found,
                     'total_apis' => $player->round_apis_found + $player->gift_apis_found,
                     'best_time' => $player->best_total_time,
+                    'total_play_time' => $player->total_play_time,
                     'total_sessions' => $player->total_sessions,
                 ];
             })->toArray();
@@ -52,8 +53,7 @@ class LeaderboardService
                     $q->where('total_apis', '>', $totalApis)
                       ->orWhere(function ($q2) use ($totalApis, $player) {
                           $q2->where('total_apis', $totalApis)
-                             ->whereNotNull('best_total_time')
-                             ->where('best_total_time', '<', $player->best_total_time);
+                             ->where('total_play_time', '<', $player->total_play_time);
                       });
                 })
                 ->count() + 1;
@@ -66,6 +66,7 @@ class LeaderboardService
             'gift_apis' => $player->gift_apis_found,
             'total_apis' => $totalApis,
             'best_time' => $player->best_total_time,
+            'total_play_time' => $player->total_play_time,
             'total_sessions' => $player->total_sessions,
             'total_players' => $totalPlayers,
         ];

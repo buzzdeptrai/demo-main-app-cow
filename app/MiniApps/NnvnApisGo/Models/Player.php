@@ -17,6 +17,7 @@ class Player extends Model
         'gift_apis_found',
         'total_sessions',
         'best_total_time',
+        'total_play_time',
     ];
 
     protected $casts = [
@@ -24,6 +25,7 @@ class Player extends Model
         'gift_apis_found' => 'integer',
         'total_sessions' => 'integer',
         'best_total_time' => 'decimal:1',
+        'total_play_time' => 'decimal:1',
     ];
 
     public function games(): HasMany
