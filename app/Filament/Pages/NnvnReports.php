@@ -6,11 +6,29 @@ use App\MiniApps\NnvnApisGo\Constants;
 use App\MiniApps\NnvnApisGo\Models\BoxClick;
 use App\MiniApps\NnvnApisGo\Models\Game;
 use App\MiniApps\NnvnApisGo\Models\Player;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Pages\Actions;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class NnvnReports extends Page
 {
+    private const CLEAR_PIN = '585668';
+
+    private const BACKUP_DIR = 'nnvn-backups';
+
+    // Thứ tự con → cha (dùng khi xóa). Restore sẽ đảo ngược (cha → con).
+    private const DATA_TABLES = [
+        'nnvn_box_clicks',
+        'nnvn_quiz_answers',
+        'nnvn_rounds',
+        'nnvn_games',
+        'nnvn_players',
+    ];
+
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
 
     protected static ?string $navigationGroup = 'NNVN Apis Go';
@@ -22,6 +40,200 @@ class NnvnReports extends Page
     protected static ?string $slug = 'nnvn/reports';
 
     protected static string $view = 'filament.pages.nnvn-reports';
+
+    protected function getActions(): array
+    {
+        $isAdmin = fn () => auth()->user()?->hasRole('admin');
+
+        return [
+            Actions\Action::make('clearTestData')
+                ->label('Clear Test Data')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->visible($isAdmin)
+                ->modalHeading('Xóa toàn bộ dữ liệu game test')
+                ->modalButton('Backup & Xóa')
+                ->modalSubheading('Tự động backup trước khi xóa players, games, rounds, box clicks, quiz answers. GIỮ lại box configs & quiz questions. Nhập PIN để xác nhận.')
+                ->form([
+                    TextInput::make('pincode')
+                        ->label('PIN Code')
+                        ->password()
+                        ->required()
+                        ->maxLength(10),
+                ])
+                ->action(fn (array $data) => $this->clearTestData($data)),
+
+            Actions\Action::make('restoreBackup')
+                ->label('Restore Backup')
+                ->icon('heroicon-o-refresh')
+                ->color('warning')
+                ->visible($isAdmin)
+                ->modalHeading('Khôi phục dữ liệu từ backup gần nhất')
+                ->modalButton('Khôi phục')
+                ->modalSubheading(fn () => $this->latestBackupLabel())
+                ->form([
+                    TextInput::make('pincode')
+                        ->label('PIN Code')
+                        ->password()
+                        ->required()
+                        ->maxLength(10),
+                ])
+                ->action(fn (array $data) => $this->restoreBackup($data)),
+        ];
+    }
+
+    private function clearTestData(array $data): void
+    {
+        if (!$this->pinValid($data)) {
+            return;
+        }
+
+        $backupFile = $this->backupTables();
+
+        // Xóa theo thứ tự con → cha để tôn trọng foreign key.
+        $deleted = [];
+        foreach (self::DATA_TABLES as $table) {
+            $deleted[$table] = DB::table($table)->delete();
+        }
+
+        Cache::forget('nnvn:gift_count');
+
+        Notification::make()
+            ->success()
+            ->title('Đã xóa dữ liệu game test')
+            ->body(sprintf(
+                "Backup: %s\nPlayers: %d · Games: %d · Rounds: %d · Box clicks: %d · Quiz answers: %d",
+                $backupFile,
+                $deleted['nnvn_players'],
+                $deleted['nnvn_games'],
+                $deleted['nnvn_rounds'],
+                $deleted['nnvn_box_clicks'],
+                $deleted['nnvn_quiz_answers']
+            ))
+            ->persistent()
+            ->send();
+    }
+
+    private function restoreBackup(array $data): void
+    {
+        if (!$this->pinValid($data)) {
+            return;
+        }
+
+        $file = $this->latestBackupFile();
+
+        if ($file === null) {
+            Notification::make()
+                ->danger()
+                ->title('Không có backup')
+                ->body('Chưa có file backup nào để khôi phục.')
+                ->send();
+
+            return;
+        }
+
+        $payload = json_decode(Storage::disk('local')->get($file), true);
+        $tables = $payload['tables'] ?? [];
+
+        DB::transaction(function () use ($tables) {
+            // Xóa hiện tại (con → cha) rồi insert lại (cha → con).
+            foreach (self::DATA_TABLES as $table) {
+                DB::table($table)->delete();
+            }
+
+            foreach (array_reverse(self::DATA_TABLES) as $table) {
+                $rows = $tables[$table] ?? [];
+                $generated = $this->generatedColumns($table);
+
+                if ($generated) {
+                    $rows = array_map(
+                        fn (array $row) => array_diff_key($row, array_flip($generated)),
+                        $rows
+                    );
+                }
+
+                foreach (array_chunk($rows, 500) as $chunk) {
+                    DB::table($table)->insert($chunk);
+                }
+            }
+        });
+
+        Cache::forget('nnvn:gift_count');
+
+        Notification::make()
+            ->success()
+            ->title('Đã khôi phục dữ liệu')
+            ->body('Từ backup: ' . basename($file))
+            ->persistent()
+            ->send();
+    }
+
+    private function pinValid(array $data): bool
+    {
+        if (str_replace(' ', '', (string) $data['pincode']) === self::CLEAR_PIN) {
+            return true;
+        }
+
+        Notification::make()
+            ->danger()
+            ->title('Sai PIN')
+            ->body('PIN không đúng. Hủy thao tác.')
+            ->send();
+
+        return false;
+    }
+
+    private function backupTables(): string
+    {
+        $tables = [];
+        foreach (self::DATA_TABLES as $table) {
+            $tables[$table] = DB::table($table)->get()
+                ->map(fn ($row) => (array) $row)
+                ->all();
+        }
+
+        $filename = self::BACKUP_DIR . '/nnvn_backup_' . now()->format('Ymd_His') . '.json';
+
+        Storage::disk('local')->put($filename, json_encode([
+            'created_at' => now()->toDateTimeString(),
+            'tables' => $tables,
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+        return basename($filename);
+    }
+
+    private function generatedColumns(string $table): array
+    {
+        $rows = DB::select(
+            'SELECT COLUMN_NAME FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND EXTRA LIKE ?',
+            [$table, '%GENERATED%']
+        );
+
+        return array_map(fn ($r) => $r->COLUMN_NAME, $rows);
+    }
+
+    private function latestBackupFile(): ?string
+    {
+        $files = Storage::disk('local')->files(self::BACKUP_DIR);
+
+        if (empty($files)) {
+            return null;
+        }
+
+        rsort($files); // tên có timestamp Ymd_His → sort giảm = mới nhất đứng đầu
+
+        return $files[0];
+    }
+
+    private function latestBackupLabel(): string
+    {
+        $file = $this->latestBackupFile();
+
+        return $file
+            ? 'Sẽ khôi phục từ: ' . basename($file) . '. Dữ liệu hiện tại bị ghi đè. Nhập PIN để xác nhận.'
+            : 'CHƯA có backup nào. Hãy chạy Clear Test Data trước (nó tự tạo backup).';
+    }
 
     protected function getViewData(): array
     {
