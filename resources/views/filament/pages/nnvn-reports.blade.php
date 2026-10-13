@@ -1,6 +1,6 @@
 <x-filament::page>
     {{-- Summary Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <x-filament::card>
             <div class="text-sm text-gray-500">Total Games</div>
             <div class="text-2xl font-bold">{{ $summary['total_games'] }}</div>
@@ -16,6 +16,10 @@
         <x-filament::card>
             <div class="text-sm text-gray-500">Message Clicks</div>
             <div class="text-2xl font-bold text-blue-600">{{ $summary['message_clicks'] }}</div>
+        </x-filament::card>
+        <x-filament::card>
+            <div class="text-sm text-gray-500">E-Card Opens</div>
+            <div class="text-2xl font-bold text-pink-600">{{ $summary['ecard_clicks'] }}</div>
         </x-filament::card>
     </div>
 

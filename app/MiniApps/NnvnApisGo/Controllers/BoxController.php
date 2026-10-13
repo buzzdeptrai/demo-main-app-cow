@@ -20,27 +20,42 @@ class BoxController extends Controller
     {
         $giftAvailable = GameService::globalGiftCount() < Constants::MAX_GIFT_APIS_GLOBAL;
 
+        // Số slot "đặc biệt" (không phải link) = apis + message + ecard,
+        // để số link luôn khớp với số link config đã fetch.
+        $specialCount = Constants::BOX_APIS_COUNT + Constants::BOX_MESSAGE_COUNT + Constants::BOX_ECARD_COUNT;
+        $linkCount = Constants::TOTAL_BOXES - $specialCount;
+
         $linkConfigs = BoxConfig::where('is_active', true)
             ->orderBy('box_index')
-            ->limit(Constants::TOTAL_BOXES - Constants::BOX_APIS_COUNT - Constants::BOX_MESSAGE_COUNT)
+            ->limit($linkCount)
             ->get();
 
         $indices = range(0, Constants::TOTAL_BOXES - 1);
         shuffle($indices);
 
-        // Số slot "đặc biệt" (không phải link) luôn cố định = apis + message,
-        // để số link luôn khớp với số link config đã fetch.
-        $specialCount = Constants::BOX_APIS_COUNT + Constants::BOX_MESSAGE_COUNT;
+        // Phân bổ slot đặc biệt từ đầu danh sách đã shuffle.
+        $cursor = 0;
 
-        // Khi hết gift toàn cục: không còn ô apis, dồn toàn bộ slot đặc biệt thành message
-        // (tránh để lộ ô trống vì thiếu link config).
-        $apisIndices = $giftAvailable
-            ? array_slice($indices, 0, Constants::BOX_APIS_COUNT)
-            : [];
-        $messageIndices = array_slice($indices, count($apisIndices), $specialCount - count($apisIndices));
+        // Khi hết gift toàn cục: bỏ ô apis, slot đó dồn thành message (tránh ô trống).
+        $apisIndices = [];
+        if ($giftAvailable) {
+            $apisIndices = array_slice($indices, $cursor, Constants::BOX_APIS_COUNT);
+            $cursor += Constants::BOX_APIS_COUNT;
+        }
 
-        $message = Constants::BOX_MESSAGES[array_rand(Constants::BOX_MESSAGES)];
-        $messageEn = Constants::BOX_MESSAGES_EN[array_rand(Constants::BOX_MESSAGES_EN)];
+        $ecardIndices = array_slice($indices, $cursor, Constants::BOX_ECARD_COUNT);
+        $cursor += Constants::BOX_ECARD_COUNT;
+
+        // Các slot đặc biệt còn lại (gồm cả slot apis khi hết gift) đều thành message.
+        $messageSlotCount = $specialCount - count($apisIndices) - count($ecardIndices);
+        $messageIndices = array_slice($indices, $cursor, $messageSlotCount);
+
+        // Gán mỗi ô message một câu khác nhau (cycle nếu số ô > số câu).
+        $messages = Constants::BOX_MESSAGES;
+        $messageMap = [];
+        foreach (array_values($messageIndices) as $pos => $boxIdx) {
+            $messageMap[$boxIdx] = $messages[$pos % count($messages)];
+        }
 
         $boxes = [];
         $linkIndex = 0;
@@ -54,14 +69,22 @@ class BoxController extends Controller
                     'label' => '',
                     'message' => null,
                 ];
-            } elseif (in_array($i, $messageIndices)) {
+            } elseif (in_array($i, $ecardIndices)) {
+                $boxes[] = [
+                    'index' => $i,
+                    'type' => 'ecard',
+                    'url' => '',
+                    'label' => '',
+                    'message' => null,
+                ];
+            } elseif (isset($messageMap[$i])) {
                 $boxes[] = [
                     'index' => $i,
                     'type' => 'message',
                     'url' => '',
                     'label' => '',
-                    'message' => $message,
-                    'message_en' => $messageEn,
+                    'message' => $messageMap[$i]['vi'],
+                    'message_en' => $messageMap[$i]['en'],
                 ];
             } else {
                 $config = $linkConfigs[$linkIndex] ?? null;

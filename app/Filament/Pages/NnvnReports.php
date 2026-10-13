@@ -97,6 +97,7 @@ class NnvnReports extends Page
             'total_games' => Game::where('status', 'completed')->count(),
             'total_box_clicks' => BoxClick::count(),
             'message_clicks' => BoxClick::where('box_type', 'message')->count(),
+            'ecard_clicks' => BoxClick::where('box_type', 'ecard')->count(),
             'gift_used' => $giftUsed,
             'gift_limit' => $giftLimit,
             'gift_remaining' => $giftLimit - $giftUsed,

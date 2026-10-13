@@ -13,19 +13,20 @@ class Constants
     const MIN_ROUND_TIME = 2.0;
     const MAX_ROUND_TIME = 30.0;
 
-    const TOTAL_BOXES = 8;
-    const BOX_APIS_COUNT = 2;
-    const BOX_MESSAGE_COUNT = 1;
+    const TOTAL_BOXES = 9;
+    const BOX_APIS_COUNT = 1;
+    const BOX_MESSAGE_COUNT = 2;
+    const BOX_ECARD_COUNT = 1;
 
+    // Paired messages (vi/en) — mỗi ô message hiển thị 1 câu khác nhau.
     const BOX_MESSAGES = [
-        'Chúc bạn may mắn lần sau!',
-        'Chúc mừng ngày Phụ nữ Việt Nam 20/10! 💐',
-        'Hãy thử lại nhé, Apis đang ẩn nấp đâu đó!',
-    ];
-
-    const BOX_MESSAGES_EN = [
-        'Better luck next time!',
-        'Happy Vietnamese Women\'s Day 20/10! 💐',
-        'Try again, Apis is hiding somewhere!',
+        [
+            'vi' => '10/10 là ngày Chuyển đổi số quốc gia của Việt Nam!',
+            'en' => 'October 10 marks Vietnam\'s National Digital Transformation Day.',
+        ],
+        [
+            'vi' => 'Cố lên! Giải Nhất đang nằm trong tầm tay bạn rồi!',
+            'en' => 'Keep going! First Prize is within your reach!',
+        ],
     ];
 }
