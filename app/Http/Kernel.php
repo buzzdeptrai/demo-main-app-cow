@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'miniapp.active' => \App\Http\Middleware\CheckMiniAppStatus::class,
         'api.rate' => \App\Http\Middleware\ApiRateLimit::class,
         'log.api' => \App\Http\Middleware\LogApiRequest::class,
+        'block.bots' => \App\Http\Middleware\BlockBots::class,
     ];
 }
