@@ -46,6 +46,13 @@ class BoxController extends Controller
         $ecardIndices = array_slice($indices, $cursor, Constants::BOX_ECARD_COUNT);
         $cursor += Constants::BOX_ECARD_COUNT;
 
+        // Gán mỗi ô ecard một thiệp khác nhau (cycle nếu số ô > số thiệp).
+        $ecards = Constants::BOX_ECARDS;
+        $ecardMap = [];
+        foreach (array_values($ecardIndices) as $pos => $boxIdx) {
+            $ecardMap[$boxIdx] = $ecards[$pos % count($ecards)];
+        }
+
         // Các slot đặc biệt còn lại (gồm cả slot apis khi hết gift) đều thành message.
         $messageSlotCount = $specialCount - count($apisIndices) - count($ecardIndices);
         $messageIndices = array_slice($indices, $cursor, $messageSlotCount);
@@ -69,13 +76,15 @@ class BoxController extends Controller
                     'label' => '',
                     'message' => null,
                 ];
-            } elseif (in_array($i, $ecardIndices)) {
+            } elseif (isset($ecardMap[$i])) {
                 $boxes[] = [
                     'index' => $i,
                     'type' => 'ecard',
+                    'ecard_key' => $ecardMap[$i]['key'],
                     'url' => '',
                     'label' => '',
-                    'message' => null,
+                    'message' => $ecardMap[$i]['vi'],
+                    'message_en' => $ecardMap[$i]['en'],
                 ];
             } elseif (isset($messageMap[$i])) {
                 $boxes[] = [
@@ -129,6 +138,7 @@ class BoxController extends Controller
             'is_correct' => $isApis,
             'url_opened' => $boxType === 'link' ? ($validated['url'] ?? null) : null,
             'message_text' => $boxType === 'message' ? ($validated['message'] ?? null) : null,
+            'ecard_key' => $boxType === 'ecard' ? ($validated['ecard_key'] ?? null) : null,
             'clicked_at' => Carbon::now(),
         ]);
 

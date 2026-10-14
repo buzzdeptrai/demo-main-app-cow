@@ -18,6 +18,7 @@ class BoxClick extends Model
         'is_correct',
         'url_opened',
         'message_text',
+        'ecard_key',
         'clicked_at',
     ];
 

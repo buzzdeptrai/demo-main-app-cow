@@ -147,6 +147,41 @@
         </div>
     </x-filament::card>
 
+    {{-- E-Card Report --}}
+    <x-filament::card class="mt-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold">E-Card Report</h2>
+            <span class="text-sm text-gray-500">Total e-card opens: <span class="font-bold text-pink-600">{{ $ecardReport['total'] }}</span></span>
+        </div>
+
+        <div>
+            <h3 class="text-sm font-semibold text-gray-600 mb-2">By E-Card</h3>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2">E-Card</th>
+                        <th class="text-left py-2">Key</th>
+                        <th class="text-right py-2">Opens</th>
+                        <th class="text-right py-2">Last Open</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($ecardReport['by_key'] as $row)
+                    <tr class="border-b">
+                        <td class="py-2">{{ $row->label ?? '(unknown)' }}</td>
+                        <td class="py-2 text-gray-500">{{ $row->ecard_key ?? '(not tracked)' }}</td>
+                        <td class="py-2 text-right font-semibold text-pink-600">{{ $row->clicks }}</td>
+                        <td class="py-2 text-right text-gray-500">{{ $row->last_click }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="4" class="py-4 text-center text-gray-400">No data yet</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+            <p class="text-xs text-gray-400 mt-2">Note: e-card key is tracked per click when the frontend sends it. Older clicks (before tracking) show as "(not tracked)".</p>
+        </div>
+    </x-filament::card>
+
     {{-- Quiz Report --}}
     <x-filament::card class="mt-6">
         <h2 class="text-lg font-semibold mb-4">Quiz Report</h2>

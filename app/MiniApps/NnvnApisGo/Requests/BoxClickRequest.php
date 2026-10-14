@@ -20,6 +20,7 @@ class BoxClickRequest extends FormRequest
             'box_type' => ['sometimes', 'string', 'in:link,apis,message,ecard'],
             'url' => ['sometimes', 'nullable', 'string', 'max:500'],
             'message' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'ecard_key' => ['sometimes', 'nullable', 'string', 'max:50'],
         ];
     }
 }

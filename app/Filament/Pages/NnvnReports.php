@@ -239,11 +239,12 @@ class NnvnReports extends Page
     {
         $boxClicks = $this->getBoxClickReport();
         $messageReport = $this->getMessageReport();
+        $ecardReport = $this->getEcardReport();
         $quizStats = $this->getQuizReport();
         $summary = $this->getSummary();
         $leaderboard = $this->getLeaderboard();
 
-        return compact('boxClicks', 'messageReport', 'quizStats', 'summary', 'leaderboard');
+        return compact('boxClicks', 'messageReport', 'ecardReport', 'quizStats', 'summary', 'leaderboard');
     }
 
     private function getBoxClickReport()
@@ -277,6 +278,35 @@ class NnvnReports extends Page
         return [
             'by_message' => $byMessage,
             'total' => BoxClick::where('box_type', 'message')->count(),
+        ];
+    }
+
+    private function getEcardReport(): array
+    {
+        // Nhãn vi theo key, để hiển thị thân thiện thay vì key thô.
+        $labels = collect(Constants::BOX_ECARDS)
+            ->mapWithKeys(fn ($e) => [$e['key'] => $e['vi']])
+            ->all();
+
+        $byKey = DB::table('nnvn_box_clicks')
+            ->select(
+                'ecard_key',
+                DB::raw('COUNT(*) as clicks'),
+                DB::raw('MAX(clicked_at) as last_click')
+            )
+            ->where('box_type', 'ecard')
+            ->groupBy('ecard_key')
+            ->orderByDesc('clicks')
+            ->get()
+            ->map(function ($row) use ($labels) {
+                $row->label = $labels[$row->ecard_key] ?? null;
+
+                return $row;
+            });
+
+        return [
+            'by_key' => $byKey,
+            'total' => BoxClick::where('box_type', 'ecard')->count(),
         ];
     }
 

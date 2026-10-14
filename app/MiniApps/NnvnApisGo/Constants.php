@@ -15,18 +15,29 @@ class Constants
 
     const TOTAL_BOXES = 9;
     const BOX_APIS_COUNT = 1;
-    const BOX_MESSAGE_COUNT = 2;
-    const BOX_ECARD_COUNT = 1;
+    const BOX_MESSAGE_COUNT = 1;
+    const BOX_ECARD_COUNT = 2;
 
     // Paired messages (vi/en) — mỗi ô message hiển thị 1 câu khác nhau.
     const BOX_MESSAGES = [
         [
+            'vi' => 'Cố lên! Giải Nhất đang nằm trong tầm tay bạn rồi!',
+            'en' => 'Keep going! First Prize is within your reach!',
+        ],
+    ];
+
+    // E-cards (vi/en) — mỗi ô ecard hiển thị 1 thiệp khác nhau.
+    // FE dùng `key` để render HTML/ảnh tương ứng (10/10 vs 20/10).
+    const BOX_ECARDS = [
+        [
+            'key' => 'digital_transformation', // 10/10
             'vi' => '10/10 là ngày Chuyển đổi số quốc gia của Việt Nam!',
             'en' => 'October 10 marks Vietnam\'s National Digital Transformation Day.',
         ],
         [
-            'vi' => 'Cố lên! Giải Nhất đang nằm trong tầm tay bạn rồi!',
-            'en' => 'Keep going! First Prize is within your reach!',
+            'key' => 'women_day', // 20/10
+            'vi' => '20/10 - Chúc mừng ngày Phụ nữ Việt Nam!',
+            'en' => 'October 20 - Happy Vietnamese Women\'s Day!',
         ],
     ];
 }
