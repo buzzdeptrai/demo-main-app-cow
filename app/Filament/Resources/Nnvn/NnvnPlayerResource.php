@@ -110,8 +110,22 @@ class NnvnPlayerResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => auth()->user()?->hasRole('admin'))
+                    ->requiresConfirmation()
+                    ->modalHeading('Xóa player')
+                    ->modalSubheading('Xóa player sẽ xóa luôn toàn bộ games, rounds, box clicks và quiz answers của player này (cascade). Không thể hoàn tác.')
+                    ->modalButton('Xóa'),
             ])
-            ->bulkActions([]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn () => auth()->user()?->hasRole('admin'))
+                    ->requiresConfirmation()
+                    ->modalHeading('Xóa các player đã chọn')
+                    ->modalSubheading('Xóa các player đã chọn cùng toàn bộ games, rounds, box clicks và quiz answers liên quan (cascade). Không thể hoàn tác.')
+                    ->modalButton('Xóa'),
+            ]);
     }
 
     public static function getRelations(): array
